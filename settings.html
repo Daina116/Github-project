@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - CollabSpace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-users"></i>
+                    <span>CollabSpace</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <h3>Main</h3>
+                    <a href="dashboard.html" class="menu-item">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="index.html" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="showWorkspaces()">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Workspaces</span>
+                    </a>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Personal</h3>
+                    <a href="profile.html" class="menu-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="settings.html" class="menu-item active">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="help.html" class="menu-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Actions</h3>
+                    <a href="#" class="menu-item" onclick="createNewWorkspace()">
+                        <i class="fas fa-plus"></i>
+                        <span>Create Workspace</span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="inviteUsers()">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Invite Users</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebarUserName">Guest User</div>
+                        <div class="user-status">
+                            <span class="status-dot online"></span>
+                            Online
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="signOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <h1>Settings</h1>
+                    <p class="breadcrumb">Home / Settings</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search settings...">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Settings Navigation -->
+                <div class="settings-nav">
+                    <button class="settings-nav-btn active" onclick="showSettingsSection('account')">
+                        <i class="fas fa-user"></i>
+                        Account
+                    </button>
+                    <button class="settings-nav-btn" onclick="showSettingsSection('notifications')">
+                        <i class="fas fa-bell"></i>
+                        Notifications
+                    </button>
+                    <button class="settings-nav-btn" onclick="showSettingsSection('privacy')">
+                        <i class="fas fa-lock"></i>
+                        Privacy
+                    </button>
+                    <button class="settings-nav-btn" onclick="showSettingsSection('appearance')">
+                        <i class="fas fa-palette"></i>
+                        Appearance
+                    </button>
+                    <button class="settings-nav-btn" onclick="showSettingsSection('workspace')">
+                        <i class="fas fa-briefcase"></i>
+                        Workspace
+                    </button>
+                    <button class="settings-nav-btn" onclick="showSettingsSection('security')">
+                        <i class="fas fa-shield-alt"></i>
+                        Security
+                    </button>
+                </div>
+
+                <!-- Settings Sections -->
+                <div class="settings-body">
+                    <!-- Account Settings -->
+                    <section class="settings-section active" id="account-settings">
+                        <h2>Account Settings</h2>
+                        
+                        <div class="setting-group">
+                            <h3>Basic Information</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Username</label>
+                                    <p>Your unique username for identification</p>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="text" id="usernameSetting" value="johndoe">
+                                    <button class="btn btn-secondary btn-sm" onclick="updateUsername()">Update</button>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Email Address</label>
+                                    <p>Primary email for notifications and login</p>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="email" id="emailSetting" value="john.doe@example.com">
+                                    <button class="btn btn-secondary btn-sm" onclick="updateEmail()">Update</button>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Phone Number</label>
+                                    <p>Optional phone number for account recovery</p>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="tel" id="phoneSetting" value="+1 234 567 8900">
+                                    <button class="btn btn-secondary btn-sm" onclick="updatePhone()">Update</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Account Status</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Account Type</label>
+                                    <p>Current subscription plan</p>
+                                </div>
+                                <div class="setting-control">
+                                    <span class="badge premium">Premium</span>
+                                    <button class="btn btn-secondary btn-sm" onclick="manageSubscription()">Manage</button>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Account Status</label>
+                                    <p>Current account status</p>
+                                </div>
+                                <div class="setting-control">
+                                    <span class="badge success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Danger Zone</h3>
+                            <div class="setting-item danger">
+                                <div class="setting-info">
+                                    <label>Delete Account</label>
+                                    <p>Permanently delete your account and all data</p>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn btn-danger" onclick="confirmDeleteAccount()">Delete Account</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Notification Settings -->
+                    <section class="settings-section" id="notifications-settings">
+                        <h2>Notification Settings</h2>
+                        
+                        <div class="setting-group">
+                            <h3>Email Notifications</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Workspace Invitations</label>
+                                    <p>Receive emails when invited to workspaces</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="emailInvitations" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Activity Updates</label>
+                                    <p>Get notified about workspace activities</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="emailActivity" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Weekly Summary</label>
+                                    <p>Receive weekly activity summary</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="emailWeekly">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Push Notifications</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Browser Notifications</label>
+                                    <p>Show desktop notifications</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="pushNotifications" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Message Notifications</label>
+                                    <p>Notify for new messages</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="messageNotifications" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Meeting Reminders</label>
+                                    <p>Get reminded about upcoming meetings</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="meetingReminders" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Privacy Settings -->
+                    <section class="settings-section" id="privacy-settings">
+                        <h2>Privacy Settings</h2>
+                        
+                        <div class="setting-group">
+                            <h3>Profile Visibility</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Profile Visibility</label>
+                                    <p>Control who can see your profile</p>
+                                </div>
+                                <div class="setting-control">
+                                    <select id="profileVisibility">
+                                        <option value="public">Public</option>
+                                        <option value="workspace">Workspace Members</option>
+                                        <option value="private">Private</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Show Online Status</label>
+                                    <p>Let others see when you're online</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="showOnlineStatus" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Show Activity Status</label>
+                                    <p>Display your current activity</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="showActivityStatus">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Data & Analytics</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Usage Analytics</label>
+                                    <p>Help improve CollabSpace with usage data</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="usageAnalytics" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Personalization</label>
+                                    <p>Allow personalized recommendations</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="personalization" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Appearance Settings -->
+                    <section class="settings-section" id="appearance-settings">
+                        <h2>Appearance Settings</h2>
+                        
+                        <div class="setting-group">
+                            <h3>Theme</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Color Theme</label>
+                                    <p>Choose your preferred color scheme</p>
+                                </div>
+                                <div class="setting-control">
+                                    <select id="colorTheme" onchange="changeTheme(this.value)">
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="auto">Auto (System)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Accent Color</label>
+                                    <p>Choose your accent color</p>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="color-picker-group">
+                                        <input type="color" id="accentColor" value="#6366f1" onchange="changeAccentColor(this.value)">
+                                        <button class="btn btn-secondary btn-sm" onclick="resetAccentColor()">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Display</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Font Size</label>
+                                    <p>Adjust text size for better readability</p>
+                                </div>
+                                <div class="setting-control">
+                                    <select id="fontSize">
+                                        <option value="small">Small</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="large">Large</option>
+                                        <option value="extra-large">Extra Large</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Compact Mode</label>
+                                    <p>Use more compact interface layout</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="compactMode">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Sidebar Width</label>
+                                    <p>Adjust sidebar width</p>
+                                </div>
+                                <div class="setting-control">
+                                    <input type="range" id="sidebarWidth" min="200" max="350" value="280">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Workspace Settings -->
+                    <section class="settings-section" id="workspace-settings">
+                        <h2>Workspace Settings</h2>
+                        
+                        <div class="setting-group">
+                            <h3>Default Settings</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Default Workspace Type</label>
+                                    <p>Default type when creating new workspaces</p>
+                                </div>
+                                <div class="setting-control">
+                                    <select id="defaultWorkspaceType">
+                                        <option value="team">Team</option>
+                                        <option value="project">Project</option>
+                                        <option value="meeting">Meeting</option>
+                                        <option value="personal">Personal</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Auto-join Workspaces</label>
+                                    <p>Automatically join when invited</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="autoJoinWorkspaces">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Show Archived Workspaces</label>
+                                    <p>Display archived workspaces in list</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="showArchived">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Collaboration</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Default Permissions</label>
+                                    <p>Default permissions for new collaborators</p>
+                                </div>
+                                <div class="setting-control">
+                                    <select id="defaultPermissions">
+                                        <option value="view">View Only</option>
+                                        <option value="edit" selected>Can Edit</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Require Approval</label>
+                                    <p>Require approval for workspace joins</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="requireApproval">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Security Settings -->
+                    <section class="settings-section" id="security-settings">
+                        <h2>Security Settings</h2>
+                        
+                        <div class="setting-group">
+                            <h3>Password</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Change Password</label>
+                                    <p>Update your account password</p>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn btn-secondary" onclick="showPasswordModal()">Change Password</button>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Two-Factor Authentication</label>
+                                    <p>Add an extra layer of security</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="twoFactorAuth">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Session Management</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Active Sessions</label>
+                                    <p>Manage your active login sessions</p>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn btn-secondary" onclick="showSessionsModal()">View Sessions</button>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Auto-logout</label>
+                                    <p>Automatically logout after inactivity</p>
+                                </div>
+                                <div class="setting-control">
+                                    <select id="autoLogout">
+                                        <option value="never">Never</option>
+                                        <option value="1hour">1 Hour</option>
+                                        <option value="4hours">4 Hours</option>
+                                        <option value="8hours" selected>8 Hours</option>
+                                        <option value="24hours">24 Hours</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h3>Login Security</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Login Notifications</label>
+                                    <p>Get notified about new login attempts</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="loginNotifications" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Suspicious Activity Detection</label>
+                                    <p>Automatically detect suspicious login attempts</p>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="switch">
+                                        <input type="checkbox" id="suspiciousDetection" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Save Settings Button -->
+                <div class="settings-footer">
+                    <button class="btn btn-primary" onclick="saveAllSettings()">Save All Settings</button>
+                    <button class="btn btn-secondary" onclick="resetSettings()">Reset to Defaults</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('passwordModal')">&times;</span>
+            <h2>Change Password</h2>
+            <form onsubmit="handlePasswordChange(event)">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('passwordModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sessions Modal -->
+    <div class="modal" id="sessionsModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sessionsModal')">&times;</span>
+            <h2>Active Sessions</h2>
+            <div class="sessions-list" id="sessionsList">
+                <!-- Sessions will be populated dynamically -->
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-danger" onclick="revokeAllSessions()">Revoke All Sessions</button>
+                <button class="btn btn-secondary" onclick="closeModal('sessionsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>

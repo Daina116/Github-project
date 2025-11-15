@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - CollabSpace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-users"></i>
+                    <span>CollabSpace</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <h3>Main</h3>
+                    <a href="dashboard.html" class="menu-item">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="index.html" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="showWorkspaces()">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Workspaces</span>
+                    </a>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Personal</h3>
+                    <a href="profile.html" class="menu-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="settings.html" class="menu-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="help.html" class="menu-item active">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>Actions</h3>
+                    <a href="#" class="menu-item" onclick="createNewWorkspace()">
+                        <i class="fas fa-plus"></i>
+                        <span>Create Workspace</span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="inviteUsers()">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Invite Users</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebarUserName">Guest User</div>
+                        <div class="user-status">
+                            <span class="status-dot online"></span>
+                            Online
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="signOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <h1>Help Center</h1>
+                    <p class="breadcrumb">Home / Help</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search for help..." id="helpSearch">
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="showContactModal()">
+                            <i class="fas fa-headset"></i> Contact Support
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Help Content -->
+            <div class="help-content">
+                <!-- Quick Help -->
+                <section class="quick-help">
+                    <h2>Quick Help</h2>
+                    <div class="help-cards">
+                        <div class="help-card" onclick="showHelpSection('getting-started')">
+                            <i class="fas fa-rocket"></i>
+                            <h3>Getting Started</h3>
+                            <p>Learn the basics of CollabSpace</p>
+                        </div>
+                        <div class="help-card" onclick="showHelpSection('workspaces')">
+                            <i class="fas fa-briefcase"></i>
+                            <h3>Workspaces</h3>
+                            <p>Manage your collaborative spaces</p>
+                        </div>
+                        <div class="help-card" onclick="showHelpSection('collaboration')">
+                            <i class="fas fa-users"></i>
+                            <h3>Collaboration</h3>
+                            <p>Work together with your team</p>
+                        </div>
+                        <div class="help-card" onclick="showHelpSection('features')">
+                            <i class="fas fa-star"></i>
+                            <h3>Features</h3>
+                            <p>Explore all available features</p>
+                        </div>
+                        <div class="help-card" onclick="showHelpSection('troubleshooting')">
+                            <i class="fas fa-tools"></i>
+                            <h3>Troubleshooting</h3>
+                            <p>Solve common issues</p>
+                        </div>
+                        <div class="help-card" onclick="showHelpSection('faq')">
+                            <i class="fas fa-question"></i>
+                            <h3>FAQ</h3>
+                            <p>Frequently asked questions</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Help Sections -->
+                <div class="help-sections">
+                    <!-- Getting Started -->
+                    <section class="help-section" id="getting-started-section">
+                        <h2>Getting Started</h2>
+                        <div class="help-articles">
+                            <article class="help-article">
+                                <h3>Welcome to CollabSpace</h3>
+                                <p>CollabSpace is a powerful collaborative platform that brings teams together to work on projects, share ideas, and communicate in real-time.</p>
+                                <div class="article-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h4>Sign Up or Log In</h4>
+                                            <p>Create your account or log in to access your workspace.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h4>Create Your First Workspace</h4>
+                                            <p>Set up a workspace for your team or project.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h4>Invite Team Members</h4>
+                                            <p>Add collaborators to start working together.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h4>Start Collaborating</h4>
+                                            <p>Use the whiteboard, chat, and other tools to work together.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="help-article">
+                                <h3>Understanding the Interface</h3>
+                                <p>Learn your way around the CollabSpace interface.</p>
+                                <div class="interface-overview">
+                                    <div class="interface-item">
+                                        <i class="fas fa-bars"></i>
+                                        <h4>Sidebar Navigation</h4>
+                                        <p>Access all main features and pages from the sidebar.</p>
+                                    </div>
+                                    <div class="interface-item">
+                                        <i class="fas fa-th-large"></i>
+                                        <h4>Dashboard</h4>
+                                        <p>Get an overview of your activity and quick access to features.</p>
+                                    </div>
+                                    <div class="interface-item">
+                                        <i class="fas fa-home"></i>
+                                        <h4>Home Page</h4>
+                                        <p>View and manage your workspaces.</p>
+                                    </div>
+                                    <div class="interface-item">
+                                        <i class="fas fa-user"></i>
+                                        <h4>Profile</h4>
+                                        <p>Manage your personal information and settings.</p>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <!-- Workspaces -->
+                    <section class="help-section" id="workspaces-section">
+                        <h2>Workspaces</h2>
+                        <div class="help-articles">
+                            <article class="help-article">
+                                <h3>Creating Workspaces</h3>
+                                <p>Workspaces are collaborative spaces where you can work with your team on projects.</p>
+                                <div class="article-content">
+                                    <h4>Types of Workspaces</h4>
+                                    <ul>
+                                        <li><strong>Team:</strong> For ongoing team collaboration</li>
+                                        <li><strong>Project:</strong> For specific project work</li>
+                                        <li><strong>Meeting:</strong> For scheduled meetings and discussions</li>
+                                        <li><strong>Personal:</strong> For individual work and notes</li>
+                                    </ul>
+                                    
+                                    <h4>Steps to Create a Workspace</h4>
+                                    <ol>
+                                        <li>Click "Create Workspace" from the sidebar or dashboard</li>
+                                        <li>Enter a name and description</li>
+                                        <li>Choose the workspace type</li>
+                                        <li>Select a template (optional)</li>
+                                        <li>Click "Create Workspace"</li>
+                                    </ol>
+                                </div>
+                            </article>
+
+                            <article class="help-article">
+                                <h3>Managing Workspaces</h3>
+                                <p>Learn how to manage your workspaces effectively.</p>
+                                <div class="article-content">
+                                    <h4>Workspace Features</h4>
+                                    <ul>
+                                        <li><strong>Whiteboard:</strong> Collaborative drawing and brainstorming</li>
+                                        <li><strong>Chat:</strong> Real-time messaging with team members</li>
+                                        <li><strong>Document Editor:</strong> Collaborative document editing</li>
+                                        <li><strong>Video Calls:</strong> Face-to-face meetings</li>
+                                        <li><strong>Task Management:</strong> Track and assign tasks</li>
+                                    </ul>
+                                    
+                                    <h4>Workspace Settings</h4>
+                                    <p>Each workspace has its own settings where you can:</p>
+                                    <ul>
+                                        <li>Manage member permissions</li>
+                                        <li>Configure workspace preferences</li>
+                                        <li>Set up integrations</li>
+                                        <li>Archive or delete the workspace</li>
+                                    </ul>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <!-- Collaboration -->
+                    <section class="help-section" id="collaboration-section">
+                        <h2>Collaboration Features</h2>
+                        <div class="help-articles">
+                            <article class="help-article">
+                                <h3>Whiteboard Collaboration</h3>
+                                <p>The whiteboard is a powerful tool for visual collaboration and brainstorming.</p>
+                                <div class="article-content">
+                                    <h4>Whiteboard Tools</h4>
+                                    <ul>
+                                        <li><strong>Pen Tool:</strong> Draw freehand</li>
+                                        <li><strong>Shapes:</strong> Add rectangles, circles, and lines</li>
+                                        <li><strong>Text:</strong> Add text annotations</li>
+                                        <li><strong>Sticky Notes:</strong> Add movable notes</li>
+                                        <li><strong>Images:</strong> Upload and add images</li>
+                                    </ul>
+                                    
+                                    <h4>Tips for Effective Whiteboarding</h4>
+                                    <ul>
+                                        <li>Use different colors to organize ideas</li>
+                                        <li>Add sticky notes for quick thoughts</li>
+                                        <li>Use shapes to create diagrams</li>
+                                        <li>Save your whiteboard for future reference</li>
+                                    </ul>
+                                </div>
+                            </article>
+
+                            <article class="help-article">
+                                <h3>Real-time Chat</h3>
+                                <p>Stay connected with your team through the built-in chat system.</p>
+                                <div class="article-content">
+                                    <h4>Chat Features</h4>
+                                    <ul>
+                                        <li><strong>Direct Messages:</strong> One-on-one conversations</li>
+                                        <li><strong>Group Chat:</strong> Chat with all workspace members</li>
+                                        <li><strong>File Sharing:</strong> Share files directly in chat</li>
+                                        <li><strong>Emojis & Reactions:</strong> Express yourself</li>
+                                        <li><strong>Message History:</strong> Search past conversations</li>
+                                    </ul>
+                                    
+                                    <h4>Chat Shortcuts</h4>
+                                    <ul>
+                                        <li><kbd>Enter</kbd> - Send message</li>
+                                        <li><kbd>Shift + Enter</kbd> - New line</li>
+                                        <li><kbd>/</kbd> - Show commands</li>
+                                        <li><kbd>@username</kbd> - Mention a user</li>
+                                    </ul>
+                                </div>
+                            </article>
+
+                            <article class="help-article">
+                                <h3>Video Conferencing</h3>
+                                <p>Connect face-to-face with integrated video calls.</p>
+                                <div class="article-content">
+                                    <h4>Starting a Video Call</h4>
+                                    <ol>
+                                        <li>Click the video icon in the workspace</li>
+                                        <li>Choose to start a new call or join an existing one</li>
+                                        <li>Allow camera and microphone access</li>
+                                        <li>Invite other participants</li>
+                                    </ol>
+                                    
+                                    <h4>Video Call Features</h4>
+                                    <ul>
+                                        <li><strong>Screen Sharing:</strong> Share your screen</li>
+                                        <li><strong>Mute/Unmute:</strong> Control your audio</li>
+                                        <li><strong>Camera On/Off:</strong> Control your video</li>
+                                        <li><strong>Participant Management:</strong> Manage who can join</li>
+                                        <li><strong>Recording:</strong> Record important meetings</li>
+                                    </ul>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <!-- Features -->
+                    <section class="help-section" id="features-section">
+                        <h2>Advanced Features</h2>
+                        <div class="help-articles">
+                            <article class="help-article">
+                                <h3>Document Editor</h3>
+                                <p>Collaborate on documents in real-time with our powerful editor.</p>
+                                <div class="article-content">
+                                    <h4>Editor Features</h4>
+                                    <ul>
+                                        <li><strong>Rich Text Formatting:</strong> Bold, italic, underline, and more</li>
+                                        <li><strong>Collaborative Editing:</strong> Multiple users can edit simultaneously</li>
+                                        <li><strong>Version History:</strong> Track changes and restore previous versions</li>
+                                        <li><strong>Comments & Suggestions:</strong> Provide feedback on documents</li>
+                                        <li><strong>Export Options:</strong> Download as PDF, Word, or other formats</li>
+                                    </ul>
+                                </div>
+                            </article>
+
+                            <article class="help-article">
+                                <h3>Task Management</h3>
+                                <p>Keep your projects organized with our task management system.</p>
+                                <div class="article-content">
+                                    <h4>Task Features</h4>
+                                    <ul>
+                                        <li><strong>Create Tasks:</strong> Add tasks with descriptions and due dates</li>
+                                        <li><strong>Assign Tasks:</strong> Assign tasks to team members</li>
+                                        <li><strong>Track Progress:</strong> Monitor task completion</li>
+                                        <li><strong>Priority Levels:</strong> Set task priorities</li>
+                                        <li><strong>Task Dependencies:</strong> Link related tasks</li>
+                                    </ul>
+                                </div>
+                            </article>
+
+                            <article class="help-article">
+                                <h3>File Management</h3>
+                                <p>Store, share, and organize files within your workspaces.</p>
+                                <div class="article-content">
+                                    <h4>File Features</h4>
+                                    <ul>
+                                        <li><strong>Upload Files:</strong> Drag and drop files to upload</li>
+                                        <li><strong>File Sharing:</strong> Share files with workspace members</li>
+                                        <li><strong>Version Control:</strong> Keep track of file versions</li>
+                                        <li><strong>File Preview:</strong> Preview files without downloading</li>
+                                        <li><strong>Search Files:</strong> Find files quickly with search</li>
+                                    </ul>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <!-- Troubleshooting -->
+                    <section class="help-section" id="troubleshooting-section">
+                        <h2>Troubleshooting</h2>
+                        <div class="help-articles">
+                            <article class="help-article">
+                                <h3>Common Issues</h3>
+                                <div class="troubleshooting-items">
+                                    <div class="troubleshooting-item">
+                                        <h4>Cannot join workspace</h4>
+                                        <p><strong>Solution:</strong> Check if you have the correct invitation link and that you're logged in. Contact the workspace owner if the issue persists.</p>
+                                    </div>
+                                    <div class="troubleshooting-item">
+                                        <h4>Video call not working</h4>
+                                        <p><strong>Solution:</strong> Ensure your browser has permission to access camera and microphone. Try refreshing the page or using a different browser.</p>
+                                    </div>
+                                    <div class="troubleshooting-item">
+                                        <h4>Files not uploading</h4>
+                                        <p><strong>Solution:</strong> Check file size limits and supported file types. Ensure you have a stable internet connection.</p>
+                                    </div>
+                                    <div class="troubleshooting-item">
+                                        <h4>Whiteboard not saving</h4>
+                                        <p><strong>Solution:</strong> Make sure you click the save button. Check your internet connection and try refreshing the page.</p>
+                                    </div>
+                                    <div class="troubleshooting-item">
+                                        <h4>Notifications not working</h4>
+                                        <p><strong>Solution:</strong> Check your browser notification settings and ensure notifications are enabled in your account settings.</p>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="help-article">
+                                <h3>Browser Compatibility</h3>
+                                <p>CollabSpace works best with modern browsers. For the best experience, we recommend:</p>
+                                <div class="browser-list">
+                                    <div class="browser-item">
+                                        <i class="fab fa-chrome"></i>
+                                        <h4>Google Chrome</h4>
+                                        <p>Version 90 or newer</p>
+                                    </div>
+                                    <div class="browser-item">
+                                        <i class="fab fa-firefox"></i>
+                                        <h4>Mozilla Firefox</h4>
+                                        <p>Version 88 or newer</p>
+                                    </div>
+                                    <div class="browser-item">
+                                        <i class="fab fa-safari"></i>
+                                        <h4>Safari</h4>
+                                        <p>Version 14 or newer</p>
+                                    </div>
+                                    <div class="browser-item">
+                                        <i class="fab fa-edge"></i>
+                                        <h4>Microsoft Edge</h4>
+                                        <p>Version 90 or newer</p>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <!-- FAQ -->
+                    <section class="help-section" id="faq-section">
+                        <h2>Frequently Asked Questions</h2>
+                        <div class="faq-list">
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <h4>How much does CollabSpace cost?</h4>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>CollabSpace offers a free tier with basic features and premium plans starting at $9.99/month for advanced features and increased storage.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <h4>Can I use CollabSpace on mobile devices?</h4>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Yes! CollabSpace is fully responsive and works great on mobile devices. We also offer native iOS and Android apps for the best mobile experience.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <h4>How secure is my data?</h4>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>We take security seriously. All data is encrypted in transit and at rest. We use industry-standard security practices and comply with GDPR and other privacy regulations.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <h4>Can I integrate with other tools?</h4>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Yes! CollabSpace integrates with popular tools like Slack, Google Drive, Dropbox, Trello, and more. Check our integrations page for the full list.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <h4>How do I export my data?</h4>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>You can export your workspace data at any time from the workspace settings. We support various formats including JSON, CSV, and PDF.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="faq-item">
+                                <div class="faq-question" onclick="toggleFAQ(this)">
+                                    <h4>Is there a limit on workspace members?</h4>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-answer">
+                                    <p>Free workspaces can have up to 10 members. Premium plans support up to 100 members, and Enterprise plans have unlimited members.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Contact Support -->
+                <section class="contact-support">
+                    <h2>Still Need Help?</h2>
+                    <p>Our support team is here to assist you.</p>
+                    <div class="contact-options">
+                        <div class="contact-option">
+                            <i class="fas fa-envelope"></i>
+                            <h3>Email Support</h3>
+                            <p>support@collabspace.com</p>
+                            <p>Response within 24 hours</p>
+                        </div>
+                        <div class="contact-option">
+                            <i class="fas fa-comments"></i>
+                            <h3>Live Chat</h3>
+                            <p>Available 9 AM - 6 PM EST</p>
+                            <button class="btn btn-primary" onclick="startLiveChat()">Start Chat</button>
+                        </div>
+                        <div class="contact-option">
+                            <i class="fas fa-book"></i>
+                            <h3>Community Forum</h3>
+                            <p>Get help from other users</p>
+                            <a href="#" class="btn btn-secondary">Visit Forum</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Contact Support Modal -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('contactModal')">&times;</span>
+            <h2>Contact Support</h2>
+            <form onsubmit="handleContactSubmit(event)">
+                <div class="form-group">
+                    <label for="contactSubject">Subject</label>
+                    <select id="contactSubject" required>
+                        <option value="">Select a topic</option>
+                        <option value="technical">Technical Issue</option>
+                        <option value="billing">Billing Question</option>
+                        <option value="feature">Feature Request</option>
+                        <option value="account">Account Issue</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Message</label>
+                    <textarea id="contactMessage" rows="5" placeholder="Describe your issue or question..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="contactPriority">Priority</label>
+                    <select id="contactPriority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('contactModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="help.js"></script>
+</body>
+</html>
