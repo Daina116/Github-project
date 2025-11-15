@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Collaborative Platform</title>
+    <link rel="stylesheet" href="calendar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">
+                <i class="fas fa-calendar"></i>
+                Collaborative Platform
+            </h1>
+        </div>
+        <div class="header-center">
+            <div class="calendar-nav">
+                <button class="btn-icon" onclick="previousView()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h2 id="currentViewTitle">November 2024</h2>
+                <button class="btn-icon" onclick="nextView()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" onclick="showCreateEventModal()">
+                <i class="fas fa-plus"></i> New Event
+            </button>
+            <div class="user-menu">
+                <button class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown" id="userDropdown">
+                    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    <a href="workspace.html"><i class="fas fa-briefcase"></i> Workspace</a>
+                    <a href="chat.html"><i class="fas fa-comments"></i> Chat</a>
+                    <a href="whiteboard.html"><i class="fas fa-chalkboard"></i> Whiteboard</a>
+                    <a href="document.html"><i class="fas fa-file-alt"></i> Documents</a>
+                    <a href="video.html"><i class="fas fa-video"></i> Video</a>
+                    <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                    <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+                    <a href="files.html"><i class="fas fa-folder"></i> Files</a>
+                    <a href="team.html"><i class="fas fa-users"></i> Team</a>
+                    <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                    <hr>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="calendar-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Calendar Views</h3>
+                <div class="view-options">
+                    <button class="view-btn active" onclick="setView('month')" data-view="month">
+                        <i class="fas fa-calendar"></i> Month
+                    </button>
+                    <button class="view-btn" onclick="setView('week')" data-view="week">
+                        <i class="fas fa-calendar-week"></i> Week
+                    </button>
+                    <button class="view-btn" onclick="setView('day')" data-view="day">
+                        <i class="fas fa-calendar-day"></i> Day
+                    </button>
+                    <button class="view-btn" onclick="setView('agenda')" data-view="agenda">
+                        <i class="fas fa-list"></i> Agenda
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Calendars</h3>
+                <div class="calendar-list">
+                    <div class="calendar-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked onchange="toggleCalendar('personal')">
+                            <span class="calendar-color personal"></span>
+                            <span>Personal</span>
+                        </label>
+                    </div>
+                    <div class="calendar-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked onchange="toggleCalendar('work')">
+                            <span class="calendar-color work"></span>
+                            <span>Work</span>
+                        </label>
+                    </div>
+                    <div class="calendar-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked onchange="toggleCalendar('team')">
+                            <span class="calendar-color team"></span>
+                            <span>Team</span>
+                        </label>
+                    </div>
+                    <div class="calendar-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" onchange="toggleCalendar('holidays')">
+                            <span class="calendar-color holidays"></span>
+                            <span>Holidays</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Today</h3>
+                <div class="today-info">
+                    <div class="today-date" id="todayDate">Friday, November 15, 2024</div>
+                    <div class="today-events" id="todayEvents">
+                        <div class="event-item">
+                            <div class="event-time">9:00 AM</div>
+                            <div class="event-title">Team Meeting</div>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-time">2:00 PM</div>
+                            <div class="event-title">Project Review</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Upcoming Events</h3>
+                <div class="upcoming-events" id="upcomingEvents">
+                    <div class="event-item">
+                        <div class="event-date">Nov 18</div>
+                        <div class="event-info">
+                            <div class="event-title">Client Presentation</div>
+                            <div class="event-time">10:00 AM</div>
+                        </div>
+                    </div>
+                    <div class="event-item">
+                        <div class="event-date">Nov 20</div>
+                        <div class="event-info">
+                            <div class="event-title">Sprint Planning</div>
+                            <div class="event-time">3:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Calendar Area -->
+        <div class="main-content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-secondary" onclick="goToToday()">Today</button>
+                    <div class="view-toggle">
+                        <button class="btn-icon" onclick="setView('day')" title="Day View">
+                            <i class="fas fa-calendar-day"></i>
+                        </button>
+                        <button class="btn-icon" onclick="setView('week')" title="Week View">
+                            <i class="fas fa-calendar-week"></i>
+                        </button>
+                        <button class="btn-icon" onclick="setView('month')" title="Month View">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="eventSearch" placeholder="Search events..." onkeyup="searchEvents()">
+                    </div>
+                    <button class="btn-icon" onclick="toggleMiniCalendar()" title="Mini Calendar">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                    <button class="btn-icon" onclick="printCalendar()" title="Print">
+                        <i class="fas fa-print"></i>
+                    </button>
+                    <button class="btn-icon" onclick="exportCalendar()" title="Export">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Month View -->
+            <div class="calendar-view month-view" id="monthView">
+                <div class="calendar-grid" id="monthGrid">
+                    <!-- Calendar grid will be generated here -->
+                </div>
+            </div>
+
+            <!-- Week View -->
+            <div class="calendar-view week-view" id="weekView" style="display: none;">
+                <div class="week-grid" id="weekGrid">
+                    <!-- Week grid will be generated here -->
+                </div>
+            </div>
+
+            <!-- Day View -->
+            <div class="calendar-view day-view" id="dayView" style="display: none;">
+                <div class="day-grid" id="dayGrid">
+                    <!-- Day grid will be generated here -->
+                </div>
+            </div>
+
+            <!-- Agenda View -->
+            <div class="calendar-view agenda-view" id="agendaView" style="display: none;">
+                <div class="agenda-list" id="agendaList">
+                    <!-- Agenda list will be generated here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Event Modal -->
+    <div class="modal" id="createEventModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Create New Event</h2>
+                <button class="btn-icon" onclick="closeModal('createEventModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventTitle">Event Title *</label>
+                            <input type="text" id="eventTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventCalendar">Calendar</label>
+                            <select id="eventCalendar" class="form-control">
+                                <option value="personal">Personal</option>
+                                <option value="work">Work</option>
+                                <option value="team">Team</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventStartDate">Start Date *</label>
+                            <input type="datetime-local" id="eventStartDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventEndDate">End Date *</label>
+                            <input type="datetime-local" id="eventEndDate" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventLocation">Location</label>
+                            <input type="text" id="eventLocation" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventVideoCall">Video Call Link</label>
+                            <input type="url" id="eventVideoCall" class="form-control" placeholder="https://meet.example.com/...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Description</label>
+                        <textarea id="eventDescription" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventReminder">Reminder</label>
+                            <select id="eventReminder" class="form-control">
+                                <option value="">No reminder</option>
+                                <option value="5">5 minutes before</option>
+                                <option value="15">15 minutes before</option>
+                                <option value="30">30 minutes before</option>
+                                <option value="60">1 hour before</option>
+                                <option value="1440">1 day before</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventRepeat">Repeat</label>
+                            <select id="eventRepeat" class="form-control">
+                                <option value="none">Does not repeat</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventAttendees">Attendees</label>
+                        <div class="attendees-input">
+                            <input type="email" id="eventAttendees" class="form-control" placeholder="Add attendee email...">
+                            <button type="button" class="btn btn-secondary" onclick="addAttendee()">Add</button>
+                        </div>
+                        <div class="attendees-list" id="attendeesList">
+                            <!-- Attendees will be added here -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('createEventModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createEvent()">Create Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div class="modal" id="eventDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="eventDetailsTitle">Event Details</h2>
+                <button class="btn-icon" onclick="closeModal('eventDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="event-details">
+                    <div class="event-info">
+                        <div class="info-group">
+                            <label>Calendar:</label>
+                            <span id="eventCalendarType">Work</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Start:</label>
+                            <span id="eventStartDateTime">Nov 15, 2024 9:00 AM</span>
+                        </div>
+                        <div class="info-group">
+                            <label>End:</label>
+                            <span id="eventEndDateTime">Nov 15, 2024 10:00 AM</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Location:</label>
+                            <span id="eventLocationText">Conference Room A</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Video Call:</label>
+                            <a href="#" id="eventVideoCallLink" target="_blank">Join Meeting</a>
+                        </div>
+                    </div>
+                    <div class="event-description">
+                        <h4>Description</h4>
+                        <p id="eventDescriptionText">Event description goes here...</p>
+                    </div>
+                    <div class="event-attendees">
+                        <h4>Attendees</h4>
+                        <div class="attendees-grid" id="eventAttendeesList">
+                            <!-- Attendees will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('eventDetailsModal')">Close</button>
+                <button class="btn btn-primary" onclick="editEvent()">Edit Event</button>
+                <button class="btn btn-danger" onclick="deleteEvent()">Delete Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mini Calendar -->
+    <div class="mini-calendar" id="miniCalendar" style="display: none;">
+        <div class="mini-calendar-header">
+            <button class="btn-icon" onclick="previousMiniMonth()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span id="miniCalendarTitle">November 2024</span>
+            <button class="btn-icon" onclick="nextMiniMonth()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="mini-calendar-grid" id="miniCalendarGrid">
+            <!-- Mini calendar will be generated here -->
+        </div>
+    </div>
+
+    <script src="calendar.js"></script>
+</body>
+</html>

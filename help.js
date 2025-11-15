@@ -1,728 +1,670 @@
-// Help Page JavaScript
-
-document.addEventListener('DOMContentLoaded', function() {
-    initializeHelp();
-});
-
-function initializeHelp() {
-    updateSidebarUser();
-    setupSearch();
-    setupAccordion();
-    loadHelpContent();
-}
-
-// Setup search functionality
-function setupSearch() {
-    const searchInput = document.getElementById('helpSearch');
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            performHelpSearch(query);
-        });
+// Help & Support JavaScript
+class HelpSupport {
+    constructor() {
+        this.articles = this.loadArticles();
+        this.searchResults = [];
+        this.currentCategory = 'all';
+        this.chatMessages = [];
+        this.init();
     }
-}
 
-// Perform help search
-function performHelpSearch(query) {
-    const helpSections = document.querySelectorAll('.help-section');
-    const searchResults = document.getElementById('searchResults');
-    
-    if (query.length < 2) {
-        searchResults.style.display = 'none';
-        helpSections.forEach(section => section.style.display = 'block');
-        return;
+    init() {
+        this.setupEventListeners();
+        this.loadPopularArticles();
+        this.initChat();
     }
-    
-    searchResults.style.display = 'block';
-    let results = [];
-    
-    // Search through all help content
-    helpSections.forEach(section => {
-        const title = section.querySelector('h3').textContent.toLowerCase();
-        const content = section.textContent.toLowerCase();
-        
-        if (title.includes(query) || content.includes(query)) {
-            results.push({
-                title: section.querySelector('h3').textContent,
-                section: section.id,
-                excerpt: getSearchExcerpt(content, query)
-            });
-        }
-    });
-    
-    // Display search results
-    if (results.length > 0) {
-        searchResults.innerHTML = `
-            <h4>Search Results (${results.length})</h4>
-            ${results.map(result => `
-                <div class="search-result-item" onclick="scrollToSection('${result.section}')">
-                    <h5>${highlightSearchTerm(result.title, query)}</h5>
-                    <p>${highlightSearchTerm(result.excerpt, query)}</p>
-                </div>
-            `).join('')}
-        `;
-        
-        // Hide all sections when searching
-        helpSections.forEach(section => section.style.display = 'none');
-    } else {
-        searchResults.innerHTML = `
-            <h4>Search Results</h4>
-            <p>No results found for "${query}". Try different keywords or browse the sections below.</p>
-        `;
-    }
-}
 
-// Get search excerpt
-function getSearchExcerpt(content, query, maxLength = 150) {
-    const index = content.indexOf(query);
-    if (index === -1) return content.substring(0, maxLength) + '...';
-    
-    const start = Math.max(0, index - 50);
-    const end = Math.min(content.length, index + query.length + 50);
-    let excerpt = content.substring(start, end);
-    
-    if (start > 0) excerpt = '...' + excerpt;
-    if (end < content.length) excerpt = excerpt + '...';
-    
-    return excerpt;
-}
-
-// Highlight search term
-function highlightSearchTerm(text, query) {
-    const regex = new RegExp(`(${query})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
-}
-
-// Scroll to section
-function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.style.display = 'block';
-        section.scrollIntoView({ behavior: 'smooth' });
-        
-        // Hide search results
-        document.getElementById('searchResults').style.display = 'none';
-        
-        // Clear search
-        document.getElementById('helpSearch').value = '';
-        
-        // Show all sections
-        document.querySelectorAll('.help-section').forEach(sec => sec.style.display = 'block');
-    }
-}
-
-// Setup accordion for FAQ
-function setupAccordion() {
-    const faqItems = document.querySelectorAll('.faq-item');
-    
-    faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question');
-        const answer = item.querySelector('.faq-answer');
-        
-        question.addEventListener('click', function() {
-            const isOpen = answer.style.display === 'block';
-            
-            // Close all FAQ items
-            faqItems.forEach(faqItem => {
-                faqItem.querySelector('.faq-answer').style.display = 'none';
-                faqItem.querySelector('.faq-question i').className = 'fas fa-chevron-down';
-            });
-            
-            // Open clicked item if it wasn't open
-            if (!isOpen) {
-                answer.style.display = 'block';
-                question.querySelector('i').className = 'fas fa-chevron-up';
+    setupEventListeners() {
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').style.display = 'none';
             }
         });
-    });
-}
 
-// Load help content dynamically
-function loadHelpContent() {
-    // This could be loaded from an API in a real application
-    // For now, content is already in the HTML
-}
-
-// Quick help functions
-function showGettingStarted() {
-    scrollToSection('getting-started');
-}
-
-function showWorkspacesHelp() {
-    scrollToSection('workspaces');
-}
-
-function showCollaborationHelp() {
-    scrollToSection('collaboration');
-}
-
-function showFeaturesHelp() {
-    scrollToSection('features');
-}
-
-function showTroubleshootingHelp() {
-    scrollToSection('troubleshooting');
-}
-
-function showFAQ() {
-    scrollToSection('faq');
-}
-
-// Contact support
-function showSupportModal() {
-    document.getElementById('supportModal').style.display = 'block';
-}
-
-function handleSupportSubmit(event) {
-    event.preventDefault();
-    
-    const subject = document.getElementById('supportSubject').value;
-    const message = document.getElementById('supportMessage').value;
-    const priority = document.getElementById('supportPriority').value;
-    
-    // In a real application, this would send to a support system
-    console.log('Support request:', { subject, message, priority });
-    
-    closeModal('supportModal');
-    showNotification('Support request submitted successfully! We\'ll get back to you soon.', 'success');
-    
-    // Clear form
-    document.getElementById('supportSubject').value = '';
-    document.getElementById('supportMessage').value = '';
-    document.getElementById('supportPriority').value = 'normal';
-}
-
-// Live chat
-function startLiveChat() {
-    alert('Live chat would open a chat widget. This is a demo version.');
-}
-
-// Video tutorials
-function watchVideoTutorial(topic) {
-    alert(`Video tutorial for "${topic}" would open in a modal or new tab. This is a demo version.`);
-}
-
-// Interactive guide
-function startInteractiveGuide() {
-    alert('Interactive guide would start with step-by-step tooltips. This is a demo version.');
-}
-
-// Keyboard shortcuts
-function showKeyboardShortcuts() {
-    const shortcuts = {
-        'Navigation': [
-            'Ctrl + / - Show keyboard shortcuts',
-            'Ctrl + K - Quick search',
-            'Ctrl + N - New workspace',
-            'Ctrl + I - Invite users',
-            'Ctrl + , - Open settings'
-        ],
-        'Workspace': [
-            'Tab - Switch between tabs',
-            'Ctrl + S - Save current work',
-            'Ctrl + Z - Undo',
-            'Ctrl + Y - Redo',
-            'Ctrl + F - Find in workspace'
-        ],
-        'Whiteboard': [
-            'W - Select whiteboard tool',
-            'T - Text tool',
-            'R - Rectangle tool',
-            'C - Circle tool',
-            'L - Line tool',
-            'E - Eraser tool',
-            'Delete - Delete selected item'
-        ],
-        'Video Call': [
-            'Space - Mute/unmute microphone',
-            'V - Toggle video',
-            'S - Share screen',
-            'R - Raise/lower hand',
-            'Esc - Leave call'
-        ]
-    };
-    
-    let shortcutsHTML = '<h4>Keyboard Shortcuts</h4>';
-    
-    Object.entries(shortcuts).forEach(([category, items]) => {
-        shortcutsHTML += `<h5>${category}</h5><ul>`;
-        items.forEach(item => {
-            shortcutsHTML += `<li>${item}</li>`;
+        // Close modals on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeAllModals();
+            }
         });
-        shortcutsHTML += '</ul>';
-    });
-    
-    alert(shortcutsHTML);
-}
 
-// System status
-function checkSystemStatus() {
-    const status = {
-        'API Services': 'Operational',
-        'Database': 'Operational',
-        'Video Calling': 'Operational',
-        'File Storage': 'Operational',
-        'Email Services': 'Degraded Performance',
-        'Authentication': 'Operational'
-    };
-    
-    let statusHTML = '<h4>System Status</h4><ul>';
-    
-    Object.entries(status).forEach(([service, status]) => {
-        const statusColor = status === 'Operational' ? '#48bb78' : 
-                           status === 'Degraded Performance' ? '#f6ad55' : '#f56565';
-        statusHTML += `<li style="color: ${statusColor}">${service}: ${status}</li>`;
-    });
-    
-    statusHTML += '</ul><p style="margin-top: 1rem; font-size: 0.875rem; color: #718096;">Last updated: ' + new Date().toLocaleString() + '</p>';
-    
-    alert(statusHTML);
-}
-
-// Report bug
-function reportBug() {
-    const bugReport = `
-Bug Report Form
-================
-
-Please provide the following information:
-
-1. What were you doing when the bug occurred?
-2. What did you expect to happen?
-3. What actually happened?
-4. Can you reproduce this bug? If so, how?
-5. Browser and version:
-6. Operating system:
-7. Any error messages you saw:
-
-In a real application, this would open a bug reporting form.
-    `;
-    
-    alert(bugReport);
-}
-
-// Feature request
-function requestFeature() {
-    const featureRequest = `
-Feature Request Form
-===================
-
-Please describe the feature you'd like to see:
-
-1. Feature title:
-2. Detailed description:
-3. Why would this feature be useful?
-4. How would you like it to work?
-5. Any examples or references:
-
-In a real application, this would open a feature request form.
-    `;
-    
-    alert(featureRequest);
-}
-
-// Documentation links
-function openDocumentation(page) {
-    const docs = {
-        'api': 'API Documentation - REST endpoints, authentication, examples',
-        'integrations': 'Integrations Guide - Connect with third-party services',
-        'admin': 'Admin Guide - User management, workspace administration',
-        'billing': 'Billing Documentation - Plans, pricing, invoices'
-    };
-    
-    alert(docs[page] || 'Documentation would open in a new tab.');
-}
-
-// Community resources
-function openCommunity(resource) {
-    const resources = {
-        'forum': 'Community Forum - Ask questions, share knowledge',
-        'blog': 'Blog - Tips, tutorials, product updates',
-        'webinars': 'Webinars - Live training sessions and demos',
-        'examples': 'Example Workspaces - Templates and use cases'
-    };
-    
-    alert(resources[resource] || 'Community resource would open in a new tab.');
-}
-
-// Helper functions
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
+        // Initialize FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.faq-question')) {
+                    this.toggleFAQ(item);
+                }
+            });
+        });
     }
-}
 
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#6366f1'};
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
+    loadArticles() {
+        const savedArticles = localStorage.getItem('helpArticles');
+        if (savedArticles) {
+            return JSON.parse(savedArticles);
+        }
+
+        // Default articles
+        const defaultArticles = [
+            {
+                id: 'getting-started',
+                title: 'Getting Started Guide',
+                category: 'getting-started',
+                description: 'Learn how to get up and running with our collaborative platform',
+                content: `
+                    <h1>Getting Started Guide</h1>
+                    <p>Welcome to our collaborative platform! This guide will help you get started quickly and make the most of all our features.</p>
+                    
+                    <h2>Creating Your Account</h2>
+                    <p>To get started, you'll need to create an account:</p>
+                    <ol>
+                        <li>Visit our signup page</li>
+                        <li>Enter your email and create a password</li>
+                        <li>Verify your email address</li>
+                        <li>Complete your profile information</li>
+                    </ol>
+                    
+                    <h2>Setting Up Your Workspace</h2>
+                    <p>Once you have an account, you can create your first workspace:</p>
+                    <ol>
+                        <li>Click on "Create Workspace" in the main menu</li>
+                        <li>Choose a workspace name and description</li>
+                        <li>Select your workspace type (team, project, etc.)</li>
+                        <li>Invite team members</li>
+                        <li>Configure your workspace settings</li>
+                    </ol>
+                    
+                    <h2>Key Features Overview</h2>
+                    <p>Our platform includes several powerful features:</p>
+                    <ul>
+                        <li><strong>Chat:</strong> Real-time messaging with team members</li>
+                        <li><strong>Whiteboard:</strong> Collaborative drawing and brainstorming</li>
+                        <li><strong>Documents:</strong> Rich text editing and document sharing</li>
+                        <li><strong>Video Calls:</strong> HD video conferencing</li>
+                        <li><strong>Tasks:</strong> Project management and task tracking</li>
+                        <li><strong>Calendar:</strong> Scheduling and event management</li>
+                        <li><strong>Files:</strong> Secure file storage and sharing</li>
+                    </ul>
+                    
+                    <h2>Next Steps</h2>
+                    <p>Now that you're familiar with the basics, we recommend:</p>
+                    <ul>
+                        <li>Exploring each feature in detail</li>
+                        <li>Inviting your team members</li>
+                        <li>Creating your first project</li>
+                        <li>Setting up integrations with other tools</li>
+                    </ul>
+                    
+                    <blockquote>Need more help? Contact our support team or browse our other help articles.</blockquote>
+                `
+            },
+            {
+                id: 'invite-team',
+                title: 'How to Invite Team Members',
+                category: 'getting-started',
+                description: 'Learn how to invite and manage team members in your workspace',
+                content: `
+                    <h1>Inviting Team Members</h1>
+                    <p>Collaboration is at the heart of our platform. Here's how to invite team members to your workspace.</p>
+                    
+                    <h2>Inviting Members</h2>
+                    <ol>
+                        <li>Navigate to the Team page</li>
+                        <li>Click the "Invite Members" button</li>
+                        <li>Enter email addresses of the people you want to invite</li>
+                        <li>Select their role (Admin, Manager, Member, or Viewer)</li>
+                        <li>Click "Send Invitations"</li>
+                    </ol>
+                    
+                    <h2>User Roles and Permissions</h2>
+                    <p>Each role has different permissions:</p>
+                    <ul>
+                        <li><strong>Admin:</strong> Full access to all features and settings</li>
+                        <li><strong>Manager:</strong> Can manage projects and team members</li>
+                        <li><strong>Member:</strong> Can participate in projects and access shared resources</li>
+                        <li><strong>Viewer:</strong> Read-only access to specific content</li>
+                    </ul>
+                    
+                    <h2>Managing Invitations</h2>
+                    <p>You can manage pending invitations from the Team page:</p>
+                    <ul>
+                        <li>View all sent invitations</li>
+                        <li>Resend invitations</li>
+                        <li>Cancel pending invitations</li>
+                        <li>Change roles after acceptance</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'file-sharing',
+                title: 'File Sharing Best Practices',
+                category: 'features',
+                description: 'Learn how to share files effectively and securely',
+                content: `
+                    <h1>File Sharing Best Practices</h1>
+                    <p>Effective file sharing is crucial for team collaboration. Follow these best practices to ensure smooth and secure file management.</p>
+                    
+                    <h2>File Organization</h2>
+                    <ul>
+                        <li>Use clear, descriptive file names</li>
+                        <li>Create logical folder structures</li>
+                        <li>Use version control for important documents</li>
+                        <li>Archive old files regularly</li>
+                    </ul>
+                    
+                    <h2>Sharing Permissions</h2>
+                    <p>Set appropriate sharing permissions:</p>
+                    <ul>
+                        <li><strong>Private:</strong> Only you can access</li>
+                        <li><strong>Team:</strong> All team members can access</li>
+                        <li><strong>Public:</strong> Anyone with the link can access</li>
+                        <li><strong>Custom:</strong> Specific people or groups</li>
+                    </ul>
+                    
+                    <h2>Security Tips</h2>
+                    <ul>
+                        <li>Enable two-factor authentication</li>
+                        <li>Use strong passwords for sensitive files</li>
+                        <li>Regularly review sharing permissions</li>
+                        <li>Encrypt sensitive documents</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'video-calls',
+                title: 'Video Call Setup',
+                category: 'features',
+                description: 'How to set up and join video conferences',
+                content: `
+                    <h1>Video Call Setup</h1>
+                    <p>Video calls are essential for remote collaboration. Here's how to set them up effectively.</p>
+                    
+                    <h2>Before the Call</h2>
+                    <ul>
+                        <li>Test your camera and microphone</li>
+                        <li>Check your internet connection</li>
+                        <li>Choose a quiet, well-lit location</li>
+                        <li>Close unnecessary applications</li>
+                    </ul>
+                    
+                    <h2>Starting a Call</h2>
+                    <ol>
+                        <li>Go to the Video page</li>
+                        <li>Click "Start New Meeting"</li>
+                        <li>Configure meeting settings</li>
+                        <li>Share the meeting link</li>
+                        <li>Start the meeting</li>
+                    </ol>
+                    
+                    <h2>During the Call</h2>
+                    <ul>
+                        <li>Mute when not speaking</li>
+                        <li>Use screen sharing for presentations</li>
+                        <li>Record important meetings</li>
+                        <li>Use chat for questions and links</li>
+                    </ul>
+                    
+                    <h2>Best Practices</h2>
+                    <ul>
+                        <li>Join 5 minutes early</li>
+                        <li>Have a clear agenda</li>
+                        <li>Assign a moderator</li>
+                        <li>Follow up with meeting notes</li>
+                    </ul>
+                `
+            },
+            {
+                id: 'security-tips',
+                title: 'Security Best Practices',
+                category: 'security',
+                description: 'How to keep your account and data secure',
+                content: `
+                    <h1>Security Best Practices</h1>
+                    <p>Security is everyone's responsibility. Follow these practices to keep your account and data safe.</p>
+                    
+                    <h2>Account Security</h2>
+                    <ul>
+                        <li>Use a strong, unique password</li>
+                        <li>Enable two-factor authentication</li>
+                        <li>Regularly update your password</li>
+                        <li>Review login activity</li>
+                    </ul>
+                    
+                    <h2>Data Protection</h2>
+                    <ul>
+                        <li>Encrypt sensitive files</li>
+                        <li>Use appropriate sharing permissions</li>
+                        <li>Regularly backup important data</li>
+                        <li>Be careful with public Wi-Fi</li>
+                    </ul>
+                    
+                    <h2>Phishing Awareness</h2>
+                    <ul>
+                        <li>Verify sender email addresses</li>
+                        <li>Don't click suspicious links</li>
+                        <li>Report phishing attempts</li>
+                        <li>Keep software updated</li>
+                    </ul>
+                    
+                    <h2>What to Do If Compromised</h2>
+                    <ol>
+                        <li>Change your password immediately</li>
+                        <li>Review account activity</li>
+                        <li>Contact support</li>
+                        <li>Inform your team</li>
+                    </ol>
+                `
+            }
+        ];
+
+        localStorage.setItem('helpArticles', JSON.stringify(defaultArticles));
+        return defaultArticles;
+    }
+
+    loadPopularArticles() {
+        // Popular articles are already loaded in the HTML
+        // This method can be used to dynamically update based on usage
+    }
+
+    searchHelp(query) {
+        if (!query) {
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('helpContent').style.display = 'block';
+            return;
+        }
+
+        query = query.toLowerCase();
+        this.searchResults = this.articles.filter(article => 
+            article.title.toLowerCase().includes(query) ||
+            article.description.toLowerCase().includes(query) ||
+            article.category.toLowerCase().includes(query)
+        );
+
+        this.displaySearchResults();
+    }
+
+    displaySearchResults() {
+        const searchResults = document.getElementById('searchResults');
+        const resultsList = document.getElementById('resultsList');
+        const helpContent = document.getElementById('helpContent');
+
+        if (this.searchResults.length === 0) {
+            resultsList.innerHTML = `
+                <div class="no-results">
+                    <p>No results found for your search.</p>
+                    <p>Try different keywords or <a href="#" onclick="createTicket()">contact support</a>.</p>
+                </div>
+            `;
+        } else {
+            resultsList.innerHTML = this.searchResults.map(article => `
+                <div class="result-item" onclick="viewArticle('${article.id}')">
+                    <div class="result-title">${article.title}</div>
+                    <div class="result-description">${article.description}</div>
+                    <span class="result-category">${article.category}</span>
+                </div>
+            `).join('');
+        }
+
+        searchResults.style.display = 'block';
+        helpContent.style.display = 'none';
+    }
+
+    filterByCategory(category) {
+        this.currentCategory = category;
+        
+        // Update active category
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        event.target.closest('.category-item').classList.add('active');
+
+        // Filter articles
+        if (category === 'all') {
+            this.searchResults = this.articles;
+        } else {
+            this.searchResults = this.articles.filter(article => article.category === category);
+        }
+
+        // Show filtered results
+        this.displaySearchResults();
+    }
+
+    viewArticle(articleId) {
+        const article = this.articles.find(a => a.id === articleId);
+        if (!article) return;
+
+        document.getElementById('articleTitle').textContent = article.title;
+        document.getElementById('articleContent').innerHTML = article.content;
+        document.getElementById('articleModal').classList.add('active');
+    }
+
+    toggleFAQ(item) {
+        const isActive = item.classList.contains('active');
+        
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(faqItem => {
+            faqItem.classList.remove('active');
+        });
+
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            item.classList.add('active');
+        }
+    }
+
+    initChat() {
+        // Add initial message
+        this.chatMessages = [{
+            type: 'support',
+            sender: 'Support Agent',
+            message: 'Hello! How can I help you today?',
+            time: 'Just now'
+        }];
+    }
+
+    sendChatMessage(message) {
+        if (!message.trim()) return;
+
+        // Add user message
+        this.chatMessages.push({
+            type: 'user',
+            sender: 'You',
+            message: message,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        // Add support response (simulated)
         setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
+            const responses = [
+                "I understand your concern. Let me help you with that.",
+                "That's a great question! Here's what I recommend...",
+                "I can definitely assist you with this issue.",
+                "Let me check that information for you.",
+                "Thanks for reaching out! I'm here to help."
+            ];
+            
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            
+            this.chatMessages.push({
+                type: 'support',
+                sender: 'Support Agent',
+                message: randomResponse,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
 
-function updateSidebarUser() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const userNameElement = document.getElementById('sidebarUserName');
-    
-    if (userNameElement) {
-        userNameElement.textContent = currentUser.name || 'Guest User';
-    }
-}
+            this.updateChatMessages();
+        }, 1000);
 
-// Add help page specific styles
-const helpStyles = document.createElement('style');
-helpStyles.textContent = `
-    .help-content {
-        padding: 2rem;
-        max-width: 1000px;
-        margin: 0 auto;
+        this.updateChatMessages();
     }
-    
-    .help-header {
-        text-align: center;
-        margin-bottom: 3rem;
+
+    updateChatMessages() {
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = this.chatMessages.map(msg => `
+            <div class="message ${msg.type}-message">
+                <div class="message-avatar">
+                    <i class="fas fa-${msg.type === 'support' ? 'headset' : 'user'}"></i>
+                </div>
+                <div class="message-content">
+                    <span class="message-sender">${msg.sender}</span>
+                    <span class="message-text">${msg.message}</span>
+                    <span class="message-time">${msg.time}</span>
+                </div>
+            </div>
+        `).join('');
+
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    
-    .help-header h2 {
-        margin: 0 0 1rem 0;
-        color: #2d3748;
-        font-size: 2rem;
+
+    submitTicket(ticketData) {
+        // Save ticket to localStorage (in a real app, this would be sent to a server)
+        const tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+        const newTicket = {
+            id: Date.now(),
+            ...ticketData,
+            status: 'open',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        tickets.push(newTicket);
+        localStorage.setItem('supportTickets', JSON.stringify(tickets));
+
+        // Show confirmation
+        this.showNotification('Support ticket created successfully! Ticket ID: ' + newTicket.id);
+        return newTicket;
     }
-    
-    .help-header p {
-        margin: 0;
-        color: #718096;
-        font-size: 1.125rem;
+
+    scheduleCall(callData) {
+        // Save call to localStorage
+        const calls = JSON.parse(localStorage.getItem('scheduledCalls') || '[]');
+        const newCall = {
+            id: Date.now(),
+            ...callData,
+            status: 'scheduled',
+            createdAt: new Date().toISOString()
+        };
+
+        calls.push(newCall);
+        localStorage.setItem('scheduledCalls', JSON.stringify(calls));
+
+        // Show confirmation
+        this.showNotification('Support call scheduled successfully!');
+        return newCall;
     }
-    
-    .help-search {
-        max-width: 600px;
-        margin: 0 auto 3rem auto;
-        position: relative;
+
+    playTutorial(tutorialId) {
+        // In a real app, this would open a video player
+        this.showNotification(`Playing tutorial: ${tutorialId}`);
     }
-    
-    .search-input {
-        width: 100%;
-        padding: 1rem 3rem 1rem 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: border-color 0.2s ease;
+
+    openForum() {
+        // In a real app, this would navigate to the forum
+        this.showNotification('Opening community forum...');
     }
-    
-    .search-input:focus {
-        outline: none;
-        border-color: #6366f1;
-    }
-    
-    .search-icon {
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #718096;
-    }
-    
-    .quick-help {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 3rem;
-    }
-    
-    .quick-help-card {
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .quick-help-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .quick-help-card i {
-        font-size: 2.5rem;
-        color: #6366f1;
-        margin-bottom: 1rem;
-    }
-    
-    .quick-help-card h3 {
-        margin: 0 0 0.5rem 0;
-        color: #2d3748;
-    }
-    
-    .quick-help-card p {
-        margin: 0;
-        color: #718096;
-        font-size: 0.875rem;
-    }
-    
-    .help-sections {
-        margin-bottom: 3rem;
-    }
-    
-    .help-section {
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .help-section h3 {
-        margin: 0 0 1.5rem 0;
-        color: #2d3748;
-        font-size: 1.5rem;
-    }
-    
-    .help-section h4 {
-        margin: 2rem 0 1rem 0;
-        color: #4a5568;
-        font-size: 1.125rem;
-    }
-    
-    .help-section p {
-        margin: 0 0 1rem 0;
-        color: #718096;
-        line-height: 1.6;
-    }
-    
-    .help-section ul {
-        margin: 0 0 1rem 0;
-        padding-left: 1.5rem;
-        color: #718096;
-    }
-    
-    .help-section li {
-        margin-bottom: 0.5rem;
-    }
-    
-    .help-section code {
-        background: #f7fafc;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.875rem;
-        color: #2d3748;
-    }
-    
-    .faq-item {
-        border-bottom: 1px solid #e2e8f0;
-        padding: 1rem 0;
-    }
-    
-    .faq-item:last-child {
-        border-bottom: none;
-    }
-    
-    .faq-question {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        font-weight: 600;
-        color: #2d3748;
-        margin-bottom: 0;
-    }
-    
-    .faq-question i {
-        color: #718096;
-        transition: transform 0.2s ease;
-    }
-    
-    .faq-answer {
-        display: none;
-        color: #718096;
-        line-height: 1.6;
-        margin-top: 1rem;
-    }
-    
-    .search-results {
-        background: #f7fafc;
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        display: none;
-    }
-    
-    .search-results h4 {
-        margin: 0 0 1rem 0;
-        color: #2d3748;
-    }
-    
-    .search-result-item {
-        background: white;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .search-result-item:hover {
-        background: #edf2f7;
-    }
-    
-    .search-result-item h5 {
-        margin: 0 0 0.5rem 0;
-        color: #2d3748;
-    }
-    
-    .search-result-item p {
-        margin: 0;
-        color: #718096;
-        font-size: 0.875rem;
-    }
-    
-    .search-result-item mark {
-        background: #fef3c7;
-        color: #2d3748;
-        padding: 0.125rem 0.25rem;
-        border-radius: 2px;
-    }
-    
-    .contact-support {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 12px;
-        padding: 3rem;
-        text-align: center;
-        color: white;
-        margin-bottom: 3rem;
-    }
-    
-    .contact-support h3 {
-        margin: 0 0 1rem 0;
-        font-size: 1.5rem;
-    }
-    
-    .contact-support p {
-        margin: 0 0 2rem 0;
-        opacity: 0.9;
-    }
-    
-    .support-buttons {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .btn-white {
-        background: white;
-        color: #6366f1;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-white:hover {
-        background: #f7fafc;
-        transform: translateY(-1px);
-    }
-    
-    .btn-outline-white {
-        background: transparent;
-        color: white;
-        border: 2px solid white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-outline-white:hover {
-        background: white;
-        color: #6366f1;
-    }
-    
-    .resource-links {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-    
-    .resource-link {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #718096;
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
-    
-    .resource-link:hover {
-        color: #6366f1;
-    }
-    
-    @media (max-width: 768px) {
-        .help-content {
-            padding: 1rem;
-        }
+
+    likeArticle() {
+        // Save article like
+        const likes = JSON.parse(localStorage.getItem('articleLikes') || '{}');
+        const currentArticle = document.getElementById('articleTitle').textContent;
         
-        .quick-help {
-            grid-template-columns: 1fr;
-        }
-        
-        .support-buttons {
-            flex-direction: column;
+        likes[currentArticle] = (likes[currentArticle] || 0) + 1;
+        localStorage.setItem('articleLikes', JSON.stringify(likes));
+
+        this.showNotification('Thanks for your feedback!');
+    }
+
+    shareArticle() {
+        // Copy article link to clipboard
+        const articleUrl = window.location.href;
+        navigator.clipboard.writeText(articleUrl).then(() => {
+            this.showNotification('Article link copied to clipboard!');
+        });
+    }
+
+    printArticle() {
+        window.print();
+    }
+
+    showNotification(message) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>${message}</span>
+        `;
+
+        // Add styles
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            display: flex;
             align-items: center;
-        }
-        
-        .resource-links {
-            grid-template-columns: 1fr;
-        }
+            gap: 0.5rem;
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
     }
+
+    closeAllModals() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
+}
+
+// Global functions
+let helpSupport;
+
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+function searchHelp() {
+    const searchInput = document.getElementById('helpSearch');
+    helpSupport.searchHelp(searchInput.value);
+}
+
+function filterByCategory(category) {
+    helpSupport.filterByCategory(category);
+}
+
+function viewArticle(articleId) {
+    helpSupport.viewArticle(articleId);
+}
+
+function toggleFAQ(element) {
+    const faqItem = element.closest('.faq-item');
+    helpSupport.toggleFAQ(faqItem);
+}
+
+function startLiveChat() {
+    document.getElementById('liveChatModal').classList.add('active');
+}
+
+function createTicket() {
+    document.getElementById('ticketModal').classList.add('active');
+}
+
+function scheduleCall() {
+    document.getElementById('scheduleCallModal').classList.add('active');
+}
+
+function playTutorial(tutorialId) {
+    helpSupport.playTutorial(tutorialId);
+}
+
+function openForum() {
+    helpSupport.openForum();
+}
+
+function likeArticle() {
+    helpSupport.likeArticle();
+}
+
+function shareArticle() {
+    helpSupport.shareArticle();
+}
+
+function printArticle() {
+    helpSupport.printArticle();
+}
+
+function handleChatInput(event) {
+    if (event.key === 'Enter') {
+        sendChatMessage();
+    }
+}
+
+function sendChatMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value.trim();
     
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
+    if (message) {
+        helpSupport.sendChatMessage(message);
+        chatInput.value = '';
     }
+}
+
+function submitTicket() {
+    const ticketData = {
+        subject: document.getElementById('ticketSubject').value,
+        category: document.getElementById('ticketCategory').value,
+        priority: document.getElementById('ticketPriority').value,
+        description: document.getElementById('ticketDescription').value,
+        attachments: document.getElementById('ticketAttachments').files
+    };
+
+    // Validate required fields
+    if (!ticketData.subject || !ticketData.description) {
+        helpSupport.showNotification('Please fill in all required fields');
+        return;
+    }
+
+    helpSupport.submitTicket(ticketData);
+    closeModal('ticketModal');
     
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
+    // Reset form
+    document.getElementById('ticketSubject').value = '';
+    document.getElementById('ticketDescription').value = '';
+    document.getElementById('ticketAttachments').value = '';
+}
+
+function scheduleSupportCall() {
+    const callData = {
+        date: document.getElementById('callDate').value,
+        time: document.getElementById('callTime').value,
+        type: document.getElementById('callType').value,
+        topic: document.getElementById('callTopic').value,
+        notes: document.getElementById('callNotes').value
+    };
+
+    // Validate required fields
+    if (!callData.date || !callData.topic) {
+        helpSupport.showNotification('Please fill in all required fields');
+        return;
     }
-`;
-document.head.appendChild(helpStyles);
+
+    helpSupport.scheduleCall(callData);
+    closeModal('scheduleCallModal');
+    
+    // Reset form
+    document.getElementById('callDate').value = '';
+    document.getElementById('callTopic').value = '';
+    document.getElementById('callNotes').value = '';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+function logout() {
+    // Clear user session
+    localStorage.removeItem('userSession');
+    window.location.href = 'index.html';
+}
+
+// Initialize help support when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    helpSupport = new HelpSupport();
+    
+    // Set minimum date for call scheduling to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('callDate').min = today;
+});

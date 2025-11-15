@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management - Collaborative Platform</title>
+    <link rel="stylesheet" href="tasks.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">
+                <i class="fas fa-tasks"></i>
+                Collaborative Platform
+            </h1>
+        </div>
+        <div class="header-center">
+            <div class="project-selector">
+                <select id="projectSelect" class="form-control">
+                    <option>Current Project</option>
+                    <option>Website Redesign</option>
+                    <option>Mobile App</option>
+                    <option>Marketing Campaign</option>
+                </select>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" onclick="showCreateTaskModal()">
+                <i class="fas fa-plus"></i> New Task
+            </button>
+            <div class="user-menu">
+                <button class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown" id="userDropdown">
+                    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    <a href="workspace.html"><i class="fas fa-briefcase"></i> Workspace</a>
+                    <a href="chat.html"><i class="fas fa-comments"></i> Chat</a>
+                    <a href="whiteboard.html"><i class="fas fa-chalkboard"></i> Whiteboard</a>
+                    <a href="document.html"><i class="fas fa-file-alt"></i> Documents</a>
+                    <a href="video.html"><i class="fas fa-video"></i> Video</a>
+                    <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                    <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+                    <a href="files.html"><i class="fas fa-folder"></i> Files</a>
+                    <a href="team.html"><i class="fas fa-users"></i> Team</a>
+                    <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                    <hr>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="tasks-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Views</h3>
+                <div class="view-options">
+                    <button class="view-btn active" onclick="setView('kanban')" data-view="kanban">
+                        <i class="fas fa-columns"></i> Kanban
+                    </button>
+                    <button class="view-btn" onclick="setView('list')" data-view="list">
+                        <i class="fas fa-list"></i> List
+                    </button>
+                    <button class="view-btn" onclick="setView('calendar')" data-view="calendar">
+                        <i class="fas fa-calendar"></i> Calendar
+                    </button>
+                    <button class="view-btn" onclick="setView('timeline')" data-view="timeline">
+                        <i class="fas fa-clock"></i> Timeline
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Filters</h3>
+                <div class="filter-options">
+                    <div class="filter-group">
+                        <label>Priority</label>
+                        <select id="priorityFilter" class="form-control" onchange="filterTasks()">
+                            <option value="">All Priorities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select id="statusFilter" class="form-control" onchange="filterTasks()">
+                            <option value="">All Status</option>
+                            <option value="todo">To Do</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="review">Review</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Assignee</label>
+                        <select id="assigneeFilter" class="form-control" onchange="filterTasks()">
+                            <option value="">All Members</option>
+                            <option value="me">Assigned to me</option>
+                            <option value="unassigned">Unassigned</option>
+                            <option value="user1">John Doe</option>
+                            <option value="user2">Jane Smith</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Due Date</label>
+                        <select id="dueDateFilter" class="form-control" onchange="filterTasks()">
+                            <option value="">All Dates</option>
+                            <option value="overdue">Overdue</option>
+                            <option value="today">Due Today</option>
+                            <option value="week">Due This Week</option>
+                            <option value="month">Due This Month</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Labels</h3>
+                <div class="label-options">
+                    <label class="label-checkbox">
+                        <input type="checkbox" value="bug" onchange="filterTasks()">
+                        <span class="label-tag bug">Bug</span>
+                    </label>
+                    <label class="label-checkbox">
+                        <input type="checkbox" value="feature" onchange="filterTasks()">
+                        <span class="label-tag feature">Feature</span>
+                    </label>
+                    <label class="label-checkbox">
+                        <input type="checkbox" value="enhancement" onchange="filterTasks()">
+                        <span class="label-tag enhancement">Enhancement</span>
+                    </label>
+                    <label class="label-checkbox">
+                        <input type="checkbox" value="urgent" onchange="filterTasks()">
+                        <span class="label-tag urgent">Urgent</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Statistics</h3>
+                <div class="task-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalTasks">0</span>
+                        <span class="stat-label">Total Tasks</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="completedTasks">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="overdueTasks">0</span>
+                        <span class="stat-label">Overdue</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="taskSearch" placeholder="Search tasks..." onkeyup="searchTasks()">
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <div class="view-controls">
+                        <button class="btn-icon" onclick="toggleGrouping()" title="Group Tasks">
+                            <i class="fas fa-object-group"></i>
+                        </button>
+                        <button class="btn-icon" onclick="toggleSorting()" title="Sort Tasks">
+                            <i class="fas fa-sort"></i>
+                        </button>
+                        <button class="btn-icon" onclick="exportTasks()" title="Export Tasks">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="btn-icon" onclick="refreshTasks()" title="Refresh">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban Board -->
+            <div class="kanban-board" id="kanbanBoard">
+                <div class="kanban-column" data-status="todo">
+                    <div class="column-header">
+                        <h3>To Do</h3>
+                        <span class="column-count">0</span>
+                        <button class="btn-icon" onclick="addTaskToColumn('todo')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="column-content" ondrop="handleDrop(event, 'todo')" ondragover="handleDragOver(event)">
+                        <!-- Tasks will be added here -->
+                    </div>
+                </div>
+
+                <div class="kanban-column" data-status="in-progress">
+                    <div class="column-header">
+                        <h3>In Progress</h3>
+                        <span class="column-count">0</span>
+                        <button class="btn-icon" onclick="addTaskToColumn('in-progress')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="column-content" ondrop="handleDrop(event, 'in-progress')" ondragover="handleDragOver(event)">
+                        <!-- Tasks will be added here -->
+                    </div>
+                </div>
+
+                <div class="kanban-column" data-status="review">
+                    <div class="column-header">
+                        <h3>Review</h3>
+                        <span class="column-count">0</span>
+                        <button class="btn-icon" onclick="addTaskToColumn('review')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="column-content" ondrop="handleDrop(event, 'review')" ondragover="handleDragOver(event)">
+                        <!-- Tasks will be added here -->
+                    </div>
+                </div>
+
+                <div class="kanban-column" data-status="done">
+                    <div class="column-header">
+                        <h3>Done</h3>
+                        <span class="column-count">0</span>
+                        <button class="btn-icon" onclick="addTaskToColumn('done')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="column-content" ondrop="handleDrop(event, 'done')" ondragover="handleDragOver(event)">
+                        <!-- Tasks will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View -->
+            <div class="list-view" id="listView" style="display: none;">
+                <table class="task-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                            <th>Task</th>
+                            <th>Assignee</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Labels</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskTableBody">
+                        <!-- Tasks will be added here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="calendar-view" id="calendarView" style="display: none;">
+                <div class="calendar-header">
+                    <button class="btn-icon" onclick="previousMonth()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 id="currentMonth">November 2024</h3>
+                    <button class="btn-icon" onclick="nextMonth()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+            </div>
+
+            <!-- Timeline View -->
+            <div class="timeline-view" id="timelineView" style="display: none;">
+                <div class="timeline-header">
+                    <h3>Task Timeline</h3>
+                </div>
+                <div class="timeline-content" id="timelineContent">
+                    <!-- Timeline will be generated here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Task Modal -->
+    <div class="modal" id="createTaskModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Create New Task</h2>
+                <button class="btn-icon" onclick="closeModal('createTaskModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskTitle">Task Title *</label>
+                            <input type="text" id="taskTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskPriority">Priority</label>
+                            <select id="taskPriority" class="form-control">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskAssignee">Assignee</label>
+                            <select id="taskAssignee" class="form-control">
+                                <option value="">Unassigned</option>
+                                <option value="me">Me</option>
+                                <option value="user1">John Doe</option>
+                                <option value="user2">Jane Smith</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskDueDate">Due Date</label>
+                            <input type="date" id="taskDueDate" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Labels</label>
+                        <div class="label-selection">
+                            <label class="label-checkbox">
+                                <input type="checkbox" name="taskLabels" value="bug">
+                                <span class="label-tag bug">Bug</span>
+                            </label>
+                            <label class="label-checkbox">
+                                <input type="checkbox" name="taskLabels" value="feature">
+                                <span class="label-tag feature">Feature</span>
+                            </label>
+                            <label class="label-checkbox">
+                                <input type="checkbox" name="taskLabels" value="enhancement">
+                                <span class="label-tag enhancement">Enhancement</span>
+                            </label>
+                            <label class="label-checkbox">
+                                <input type="checkbox" name="taskLabels" value="urgent">
+                                <span class="label-tag urgent">Urgent</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskAttachments">Attachments</label>
+                        <div class="file-upload">
+                            <input type="file" id="taskAttachments" multiple>
+                            <div class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload or drag and drop</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('createTaskModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createTask()">Create Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div class="modal" id="taskDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="taskDetailsTitle">Task Details</h2>
+                <button class="btn-icon" onclick="closeModal('taskDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="task-details">
+                    <div class="task-info">
+                        <div class="info-group">
+                            <label>Status:</label>
+                            <select id="taskStatus" class="form-control" onchange="updateTaskStatus()">
+                                <option value="todo">To Do</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="review">Review</option>
+                                <option value="done">Done</option>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label>Priority:</label>
+                            <select id="taskPriority" class="form-control" onchange="updateTaskPriority()">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label>Assignee:</label>
+                            <select id="taskAssignee" class="form-control" onchange="updateTaskAssignee()">
+                                <option value="">Unassigned</option>
+                                <option value="me">Me</option>
+                                <option value="user1">John Doe</option>
+                                <option value="user2">Jane Smith</option>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label>Due Date:</label>
+                            <input type="date" id="taskDueDate" class="form-control" onchange="updateTaskDueDate()">
+                        </div>
+                    </div>
+                    <div class="task-description">
+                        <h4>Description</h4>
+                        <p id="taskDescriptionText">Task description goes here...</p>
+                    </div>
+                    <div class="task-comments">
+                        <h4>Comments</h4>
+                        <div class="comments-list" id="commentsList">
+                            <!-- Comments will be added here -->
+                        </div>
+                        <div class="add-comment">
+                            <textarea id="commentText" class="form-control" placeholder="Add a comment..."></textarea>
+                            <button class="btn btn-primary" onclick="addComment()">Add Comment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('taskDetailsModal')">Close</button>
+                <button class="btn btn-danger" onclick="deleteTask()">Delete Task</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="tasks.js"></script>
+</body>
+</html>

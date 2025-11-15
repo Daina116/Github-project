@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - CollabSpace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chat.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <span>CollabSpace</span>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="profile.html" class="btn btn-secondary">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="workspace.html" class="btn btn-secondary">
+                    <i class="fas fa-folder"></i> Workspaces
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="chat-main">
+        <div class="chat-container">
+            <!-- Sidebar -->
+            <aside class="chat-sidebar">
+                <div class="sidebar-header">
+                    <h2>Messages</h2>
+                    <div class="sidebar-actions">
+                        <button class="btn btn-icon" onclick="createNewChat()" title="New Chat">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="toggleSearch()" title="Search">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-container" id="searchContainer" style="display: none;">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search conversations..." onkeyup="searchConversations(this.value)">
+                    </div>
+                </div>
+
+                <div class="chat-categories">
+                    <div class="category-tabs">
+                        <button class="category-tab active" onclick="filterChats('all')">All</button>
+                        <button class="category-tab" onclick="filterChats('unread')">Unread</button>
+                        <button class="category-tab" onclick="filterChats('groups')">Groups</button>
+                        <button class="category-tab" onclick="filterChats('direct')">Direct</button>
+                    </div>
+                </div>
+
+                <div class="chat-list" id="chatList">
+                    <!-- Chat items will be populated here -->
+                </div>
+            </aside>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header" id="chatHeader">
+                    <div class="chat-info">
+                        <div class="chat-avatar">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="chat-details">
+                            <h3>Select a conversation</h3>
+                            <p>Choose a chat to start messaging</p>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="btn btn-icon" onclick="startVideoCall()" title="Video Call" disabled>
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="startVoiceCall()" title="Voice Call" disabled>
+                            <i class="fas fa-phone"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="showChatInfo()" title="Chat Info" disabled>
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="empty-chat">
+                        <i class="fas fa-comments"></i>
+                        <h3>Welcome to CollabSpace Chat</h3>
+                        <p>Select a conversation to start messaging, or create a new chat to get started.</p>
+                        <button class="btn btn-primary" onclick="createNewChat()">
+                            <i class="fas fa-plus"></i> Start New Chat
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                    <div class="input-toolbar">
+                        <button class="btn btn-icon" onclick="attachFile()" title="Attach File">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="insertEmoji()" title="Emoji">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="formatText()" title="Format Text">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="shareLocation()" title="Share Location">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="startPoll()" title="Create Poll">
+                            <i class="fas fa-poll"></i>
+                        </button>
+                    </div>
+                    <div class="message-input-area">
+                        <textarea id="messageInput" placeholder="Type a message..." onkeypress="handleMessageKeypress(event)"></textarea>
+                        <button class="btn btn-primary send-btn" onclick="sendMessage()" id="sendButton">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Info Panel -->
+            <aside class="chat-info-panel" id="chatInfoPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3>Chat Information</h3>
+                    <button class="btn btn-icon" onclick="closeChatInfo()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="chat-participants">
+                        <h4>Participants</h4>
+                        <div class="participants-list" id="participantsList">
+                            <!-- Participants will be listed here -->
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="addParticipant()">
+                            <i class="fas fa-user-plus"></i> Add Participant
+                        </button>
+                    </div>
+                    <div class="chat-media">
+                        <h4>Shared Media</h4>
+                        <div class="media-grid" id="mediaGrid">
+                            <!-- Media files will be shown here -->
+                        </div>
+                    </div>
+                    <div class="chat-settings">
+                        <h4>Settings</h4>
+                        <div class="setting-item">
+                            <label>Mute Notifications</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="muteNotifications" onchange="toggleMute()">
+                                <span class="slider"></span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label>Pin Chat</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="pinChat" onchange="togglePin()">
+                                <span class="slider"></span>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="leaveChat()">
+                            <i class="fas fa-sign-out-alt"></i> Leave Chat
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- New Chat Modal -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('newChatModal')">&times;</span>
+            <h2>New Conversation</h2>
+            
+            <div class="chat-type-selector">
+                <button class="chat-type-btn active" onclick="selectChatType('direct')" data-type="direct">
+                    <i class="fas fa-user"></i>
+                    <span>Direct Message</span>
+                </button>
+                <button class="chat-type-btn" onclick="selectChatType('group')" data-type="group">
+                    <i class="fas fa-users"></i>
+                    <span>Group Chat</span>
+                </button>
+            </div>
+
+            <div class="chat-form" id="directChatForm">
+                <div class="form-group">
+                    <label>Select Contact</label>
+                    <div class="contact-list" id="contactList">
+                        <!-- Contacts will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-form" id="groupChatForm" style="display: none;">
+                <div class="form-group">
+                    <label for="groupName">Group Name</label>
+                    <input type="text" id="groupName" placeholder="Enter group name">
+                </div>
+                <div class="form-group">
+                    <label for="groupDescription">Description (Optional)</label>
+                    <textarea id="groupDescription" placeholder="What's this group about?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Add Members</label>
+                    <div class="contact-list" id="groupContactList">
+                        <!-- Contacts will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('newChatModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createChat()">Create Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div class="emoji-picker" id="emojiPicker" style="display: none;">
+        <div class="emoji-header">
+            <span>Emojis</span>
+            <button class="btn btn-icon" onclick="closeEmojiPicker()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="emoji-grid">
+            <!-- Emojis will be populated here -->
+        </div>
+    </div>
+
+    <!-- File Upload Modal -->
+    <div class="modal" id="fileUploadModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('fileUploadModal')">&times;</span>
+            <h2>Share File</h2>
+            
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop files here or click to browse</p>
+                <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFileSelect(event)">
+                <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                    Choose Files
+                </button>
+            </div>
+
+            <div class="file-preview" id="filePreview" style="display: none;">
+                <h4>Files to Upload</h4>
+                <div class="file-list" id="fileList">
+                    <!-- Selected files will be shown here -->
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('fileUploadModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="uploadFiles()" id="uploadBtn" disabled>
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Poll Modal -->
+    <div class="modal" id="pollModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('pollModal')">&times;</span>
+            <h2>Create Poll</h2>
+            
+            <div class="poll-form">
+                <div class="form-group">
+                    <label for="pollQuestion">Question</label>
+                    <input type="text" id="pollQuestion" placeholder="What would you like to ask?">
+                </div>
+                <div class="form-group">
+                    <label>Options</label>
+                    <div class="poll-options" id="pollOptions">
+                        <div class="poll-option">
+                            <input type="text" placeholder="Option 1">
+                            <button class="btn btn-icon" onclick="removePollOption(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="poll-option">
+                            <input type="text" placeholder="Option 2">
+                            <button class="btn btn-icon" onclick="removePollOption(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="addPollOption()">
+                        <i class="fas fa-plus"></i> Add Option
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Poll Settings</label>
+                    <div class="poll-settings">
+                        <label>
+                            <input type="checkbox" id="allowMultiple"> Allow multiple selections
+                        </label>
+                        <label>
+                            <input type="checkbox" id="anonymousPoll"> Anonymous poll
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('pollModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createPoll()">Create Poll</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="chat.js"></script>
+</body>
+</html>

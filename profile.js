@@ -1,653 +1,507 @@
 // Profile Page JavaScript
+let currentUser = null;
+let notifications = [];
 
+// Initialize profile page
 document.addEventListener('DOMContentLoaded', function() {
+    loadUserData();
     initializeProfile();
+    loadNotifications();
 });
 
+// Load user data from localStorage
+function loadUserData() {
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+        currentUser = JSON.parse(storedUser);
+        updateProfileDisplay();
+    } else {
+        // Redirect to home if not logged in
+        window.location.href = 'index.html';
+    }
+}
+
+// Initialize profile page
 function initializeProfile() {
-    loadProfileData();
-    updateProfileStats();
-    loadUserWorkspaces();
-    initializeActivityChart();
-    updateSidebarUser();
+    loadWorkspaces();
+    loadActivity();
+    updateNotificationCount();
 }
 
-// Load profile data
-function loadProfileData() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    
-    // Update profile information
-    document.getElementById('profileName').textContent = currentUser.name || 'John Doe';
-    document.getElementById('profileEmail').textContent = currentUser.email || 'john.doe@example.com';
-    document.getElementById('fullName').textContent = currentUser.name || 'John Doe';
-    document.getElementById('email').textContent = currentUser.email || 'john.doe@example.com';
-    document.getElementById('phone').textContent = currentUser.phone || '+1 234 567 8900';
-    document.getElementById('location').textContent = currentUser.location || 'San Francisco, CA';
-    document.getElementById('timezone').textContent = currentUser.timezone || 'PST (UTC-8)';
-    document.getElementById('language').textContent = currentUser.language || 'English';
-    
-    // Professional information
-    document.getElementById('jobTitle').textContent = currentUser.jobTitle || 'Product Manager';
-    document.getElementById('company').textContent = currentUser.company || 'Tech Corp';
-    document.getElementById('department').textContent = currentUser.department || 'Product';
-    
-    // Skills
-    const skills = currentUser.skills || ['Project Management', 'Agile', 'Scrum', 'Product Strategy'];
-    const skillsContainer = document.getElementById('skills');
-    skillsContainer.innerHTML = skills.map(skill => 
-        `<span class="skill-tag">${skill}</span>`
-    ).join('');
-    
-    // Join date
-    const joinDate = currentUser.joinDate || new Date('2024-11-01');
-    document.getElementById('joinDate').textContent = joinDate.toLocaleDateString('en-US', { 
-        month: 'short', 
-        year: 'numeric' 
-    });
+// Update profile display
+function updateProfileDisplay() {
+    if (currentUser) {
+        document.getElementById('profileName').textContent = currentUser.username || 'John Doe';
+        document.getElementById('profileEmail').textContent = currentUser.email || 'john.doe@example.com';
+        document.getElementById('fullName').textContent = currentUser.username || 'John Doe';
+        document.getElementById('userEmail').textContent = currentUser.email || 'john.doe@example.com';
+        
+        // Update edit form values
+        document.getElementById('editFullName').value = currentUser.username || 'John Doe';
+        document.getElementById('editEmail').value = currentUser.email || 'john.doe@example.com';
+    }
 }
 
-// Update profile statistics
-function updateProfileStats() {
+// Tab switching
+function switchTab(tabName) {
+    // Remove active class from all tabs and panes
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    
+    // Add active class to selected tab and pane
+    event.target.classList.add('active');
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+    
+    // Load tab-specific data
+    if (tabName === 'workspaces') {
+        loadWorkspaces();
+    } else if (tabName === 'activity') {
+        loadActivity();
+    }
+}
+
+// Load workspaces
+function loadWorkspaces() {
     const workspaces = JSON.parse(localStorage.getItem('workspaces') || '[]');
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const grid = document.getElementById('workspacesGrid');
     
-    // Calculate user's workspaces
-    const userWorkspaces = workspaces.filter(ws => 
-        ws.owner === currentUser.id || 
-        (ws.members && ws.members.some(m => m.email === currentUser.email))
-    );
-    
-    document.getElementById('totalWorkspaces').textContent = userWorkspaces.length;
-    
-    // Calculate total collaborators
-    const totalCollaborators = new Set();
-    userWorkspaces.forEach(workspace => {
-        if (workspace.members) {
-            workspace.members.forEach(member => {
-                if (member.email !== currentUser.email) {
-                    totalCollaborators.add(member.email);
-                }
-            });
-        }
-    });
-    document.getElementById('totalCollaborators').textContent = totalCollaborators.size;
-    
-    // Calculate total projects (workspaces of type 'project')
-    const projectWorkspaces = userWorkspaces.filter(ws => ws.type === 'project');
-    document.getElementById('totalProjects').textContent = projectWorkspaces.length;
-}
-
-// Load user's workspaces
-function loadUserWorkspaces() {
-    const workspaceGrid = document.getElementById('userWorkspaces');
-    const workspaces = JSON.parse(localStorage.getItem('workspaces') || '[]');
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    
-    const userWorkspaces = workspaces.filter(ws => 
-        ws.owner === currentUser.id || 
-        (ws.members && ws.members.some(m => m.email === currentUser.email))
-    ).slice(0, 6);
-    
-    if (userWorkspaces.length === 0) {
-        workspaceGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #718096;">No workspaces found</p>';
+    if (workspaces.length === 0) {
+        grid.innerHTML = '<p>No workspaces found. Create your first workspace!</p>';
         return;
     }
     
-    workspaceGrid.innerHTML = userWorkspaces.map(workspace => `
+    grid.innerHTML = workspaces.map(workspace => `
         <div class="workspace-card" onclick="openWorkspace('${workspace.id}')">
-            <div class="workspace-card-header">
-                <div class="workspace-icon">
-                    <i class="fas ${workspace.icon || 'fa-briefcase'}"></i>
-                </div>
-                <div class="workspace-type">${workspace.type || 'team'}</div>
-            </div>
-            <div class="workspace-card-body">
-                <h4>${workspace.name}</h4>
-                <p>${workspace.description || 'No description available'}</p>
-                <div class="workspace-stats">
-                    <span><i class="fas fa-users"></i> ${(workspace.members || []).length}</span>
-                    <span><i class="fas fa-tasks"></i> ${(workspace.tasks || []).length}</span>
-                </div>
+            <h3>${workspace.name}</h3>
+            <p>${workspace.description}</p>
+            <div class="workspace-meta">
+                <span>${workspace.participants?.length || 1} participants</span>
+                <span>${workspace.type}</span>
             </div>
         </div>
     `).join('');
 }
 
-// Initialize activity chart
-function initializeActivityChart() {
-    const canvas = document.getElementById('activityChart');
-    if (!canvas) return;
+// Load activity
+function loadActivity() {
+    const activities = [
+        {
+            type: 'document',
+            icon: 'fa-file-alt',
+            title: 'Updated document',
+            description: 'Modified "Project Requirements" in "Project Alpha"',
+            time: '2 hours ago'
+        },
+        {
+            type: 'message',
+            icon: 'fa-comments',
+            title: 'Posted message',
+            description: 'In "Design Team" workspace',
+            time: '4 hours ago'
+        },
+        {
+            type: 'task',
+            icon: 'fa-tasks',
+            title: 'Completed task',
+            description: '"Fix login bug" marked as done',
+            time: '1 day ago'
+        },
+        {
+            type: 'workspace',
+            icon: 'fa-users',
+            title: 'Joined workspace',
+            description: 'Added to "Marketing Team"',
+            time: '2 days ago'
+        },
+        {
+            type: 'document',
+            icon: 'fa-file-alt',
+            title: 'Created document',
+            description: 'New "Meeting Notes" in "Team Standup"',
+            time: '3 days ago'
+        }
+    ];
     
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    
-    // Generate mock activity data
-    const data = generateActivityData();
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-    
-    // Draw chart
-    drawActivityChart(ctx, data, width, height);
+    const timeline = document.getElementById('activityTimeline');
+    timeline.innerHTML = activities.map(activity => `
+        <div class="activity-item">
+            <div class="activity-icon">
+                <i class="fas ${activity.icon}"></i>
+            </div>
+            <div class="activity-content">
+                <p><strong>${activity.title}</strong> - ${activity.description}</p>
+                <span class="activity-time">${activity.time}</span>
+            </div>
+        </div>
+    `).join('');
 }
 
-function generateActivityData() {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days.map(day => ({
-        day,
-        activity: Math.floor(Math.random() * 10) + 1
-    }));
-}
-
-function drawActivityChart(ctx, data, width, height) {
-    const padding = 40;
-    const chartWidth = width - padding * 2;
-    const chartHeight = height - padding * 2;
-    const barWidth = chartWidth / data.length * 0.6;
-    const spacing = chartWidth / data.length;
+// Filter activity
+function filterActivity(type) {
+    // Update active filter button
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
     
-    // Find max activity for scaling
-    const maxActivity = Math.max(...data.map(d => d.activity));
-    
-    // Draw axes
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(padding, padding);
-    ctx.lineTo(padding, height - padding);
-    ctx.lineTo(width - padding, height - padding);
-    ctx.stroke();
-    
-    // Draw bars
-    data.forEach((item, index) => {
-        const barHeight = (item.activity / maxActivity) * chartHeight;
-        const x = padding + index * spacing + (spacing - barWidth) / 2;
-        const y = height - padding - barHeight;
-        
-        // Draw bar
-        ctx.fillStyle = '#6366f1';
-        ctx.fillRect(x, y, barWidth, barHeight);
-        
-        // Draw day label
-        ctx.fillStyle = '#718096';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(item.day, x + barWidth / 2, height - padding + 20);
-        
-        // Draw activity value
-        ctx.fillStyle = '#2d3748';
-        ctx.fillText(item.activity, x + barWidth / 2, y - 5);
-    });
-    
-    // Draw title
-    ctx.fillStyle = '#2d3748';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Weekly Activity', width / 2, 20);
+    // Filter logic would go here
+    console.log('Filtering activity by:', type);
 }
 
 // Edit profile
 function editProfile() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    
-    // Populate edit form
-    document.getElementById('editFullName').value = currentUser.name || '';
-    document.getElementById('editEmail').value = currentUser.email || '';
-    document.getElementById('editPhone').value = currentUser.phone || '';
-    document.getElementById('editLocation').value = currentUser.location || '';
-    document.getElementById('editJobTitle').value = currentUser.jobTitle || '';
-    document.getElementById('editCompany').value = currentUser.company || '';
-    document.getElementById('editBio').value = currentUser.bio || '';
-    document.getElementById('editSkills').value = (currentUser.skills || []).join(', ');
-    
-    // Show modal
     document.getElementById('editProfileModal').style.display = 'block';
 }
 
-// Handle profile update
-function handleProfileUpdate(event) {
+// Save profile changes
+function saveProfileChanges(event) {
     event.preventDefault();
     
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const fullName = document.getElementById('editFullName').value;
+    const email = document.getElementById('editEmail').value;
+    const phone = document.getElementById('editPhone').value;
+    const location = document.getElementById('editLocation').value;
+    const department = document.getElementById('editDepartment').value;
+    const role = document.getElementById('editRole').value;
+    const bio = document.getElementById('editBio').value;
     
     // Update user data
-    const updatedUser = {
-        ...currentUser,
-        name: document.getElementById('editFullName').value,
-        email: document.getElementById('editEmail').value,
-        phone: document.getElementById('editPhone').value,
-        location: document.getElementById('editLocation').value,
-        jobTitle: document.getElementById('editJobTitle').value,
-        company: document.getElementById('editCompany').value,
-        bio: document.getElementById('editBio').value,
-        skills: document.getElementById('editSkills').value
-            .split(',')
-            .map(skill => skill.trim())
-            .filter(skill => skill.length > 0)
-    };
-    
-    // Save updated user
-    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-    
-    // Update workspaces with new user info
-    updateWorkspacesUserInfo(updatedUser);
-    
-    // Close modal
-    closeModal('editProfileModal');
-    
-    // Reload profile data
-    loadProfileData();
-    
-    // Show success notification
-    showNotification('Profile updated successfully!', 'success');
-}
-
-// Update user info in all workspaces
-function updateWorkspacesUserInfo(updatedUser) {
-    const workspaces = JSON.parse(localStorage.getItem('workspaces') || '[]');
-    
-    workspaces.forEach(workspace => {
-        if (workspace.members) {
-            workspace.members = workspace.members.map(member => 
-                member.email === updatedUser.email 
-                    ? { ...member, name: updatedUser.name }
-                    : member
-            );
-        }
-    });
-    
-    localStorage.setItem('workspaces', JSON.stringify(workspaces));
+    if (currentUser) {
+        currentUser.username = fullName;
+        currentUser.email = email;
+        currentUser.phone = phone;
+        currentUser.location = location;
+        currentUser.department = department;
+        currentUser.role = role;
+        currentUser.bio = bio;
+        
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateProfileDisplay();
+        closeModal('editProfileModal');
+        
+        showNotification('Profile updated successfully!', 'success');
+    }
 }
 
 // Change avatar
 function changeAvatar() {
-    // In a real application, this would open a file picker
-    alert('Avatar upload would open a file picker. This is a demo version.');
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatarImage').src = e.target.result;
+                if (currentUser) {
+                    currentUser.avatar = e.target.result;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+// Share profile
+function shareProfile() {
+    const profileUrl = window.location.href;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'My Profile - CollabSpace',
+            text: 'Check out my profile on CollabSpace',
+            url: profileUrl
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(profileUrl).then(() => {
+            showNotification('Profile link copied to clipboard!', 'success');
+        });
+    }
+}
+
+// Create new workspace
+function createNewWorkspace() {
+    window.location.href = 'index.html?action=create';
+}
+
+// Invite team member
+function inviteTeamMember() {
+    const email = prompt('Enter email address to invite:');
+    if (email) {
+        // Simulate sending invitation
+        showNotification(`Invitation sent to ${email}!`, 'success');
+        
+        // Add to notifications
+        addNotification({
+            type: 'invitation_sent',
+            title: 'Invitation Sent',
+            message: `You invited ${email} to join your workspace`,
+            time: new Date().toISOString()
+        });
+    }
+}
+
+// View activity
+function viewActivity() {
+    switchTab('activity');
+    document.querySelector('[onclick="switchTab(\'activity\')"]').click();
+}
+
+// Open settings
+function openSettings() {
+    switchTab('settings');
+    document.querySelector('[onclick="switchTab(\'settings\')"]').click();
+}
+
+// Export data
+function exportData() {
+    const userData = {
+        profile: currentUser,
+        workspaces: JSON.parse(localStorage.getItem('workspaces') || '[]'),
+        settings: JSON.parse(localStorage.getItem('settings') || '{}'),
+        exportDate: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(userData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `collabspace-data-${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    showNotification('Data exported successfully!', 'success');
+}
+
+// Delete account
+function deleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your data. Are you absolutely sure?')) {
+            // Clear all user data
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('workspaces');
+            localStorage.removeItem('settings');
+            
+            showNotification('Account deleted successfully. Redirecting...', 'info');
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+    }
+}
+
+// Save settings
+function saveSettings() {
+    const settings = {
+        language: document.getElementById('languageSelect').value,
+        timezone: document.getElementById('timezoneSelect').value,
+        dateFormat: document.getElementById('dateFormatSelect').value,
+        emailNotifications: document.getElementById('emailNotifications').checked,
+        desktopNotifications: document.getElementById('desktopNotifications').checked,
+        messageSounds: document.getElementById('messageSounds').checked,
+        theme: document.getElementById('themeSelect').value,
+        fontSize: document.getElementById('fontSizeSelect').value
+    };
+    
+    localStorage.setItem('settings', JSON.stringify(settings));
+    showNotification('Settings saved successfully!', 'success');
+}
+
+// Reset settings
+function resetSettings() {
+    if (confirm('Are you sure you want to reset all settings to default?')) {
+        localStorage.removeItem('settings');
+        
+        // Reset form values
+        document.getElementById('languageSelect').value = 'en';
+        document.getElementById('timezoneSelect').value = 'PST';
+        document.getElementById('dateFormatSelect').value = 'MM/DD/YYYY';
+        document.getElementById('emailNotifications').checked = true;
+        document.getElementById('desktopNotifications').checked = true;
+        document.getElementById('messageSounds').checked = false;
+        document.getElementById('themeSelect').value = 'light';
+        document.getElementById('fontSizeSelect').value = 'medium';
+        
+        showNotification('Settings reset to default!', 'info');
+    }
+}
+
+// Update password
+function updatePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        showNotification('Please fill in all password fields', 'error');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        showNotification('New passwords do not match', 'error');
+        return;
+    }
+    
+    if (newPassword.length < 8) {
+        showNotification('Password must be at least 8 characters long', 'error');
+        return;
+    }
+    
+    // Simulate password update
+    showNotification('Password updated successfully!', 'success');
+    
+    // Clear form
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+}
+
+// Enable 2FA
+function enable2FA() {
+    alert('Two-factor authentication setup would open here with QR code and backup codes');
+    showNotification('2FA setup initiated. Check your email for instructions.', 'info');
+}
+
+// Terminate session
+function terminateSession(sessionId) {
+    if (confirm('Are you sure you want to terminate this session?')) {
+        showNotification(`Session terminated: ${sessionId}`, 'success');
+        
+        // If terminating current session, log out
+        if (sessionId === 'current') {
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+    }
+}
+
+// Add skill
+function addSkill() {
+    const skill = prompt('Enter a new skill:');
+    if (skill) {
+        const skillsContainer = document.querySelector('.skills-container');
+        const addButton = skillsContainer.querySelector('.skill-add');
+        
+        const newSkill = document.createElement('div');
+        newSkill.className = 'skill-tag';
+        newSkill.textContent = skill;
+        newSkill.onclick = function() {
+            if (confirm(`Remove skill: ${skill}?`)) {
+                newSkill.remove();
+            }
+        };
+        
+        skillsContainer.insertBefore(newSkill, addButton);
+        showNotification(`Skill added: ${skill}`, 'success');
+    }
 }
 
 // Open workspace
 function openWorkspace(workspaceId) {
-    localStorage.setItem('currentWorkspaceId', workspaceId);
-    window.location.href = 'index.html';
+    window.location.href = `index.html?workspace=${workspaceId}`;
 }
 
-// Show notification
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#6366f1'};
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-    `;
+// Notifications
+function showNotifications() {
+    document.getElementById('notificationsModal').style.display = 'block';
+    markNotificationsAsRead();
+}
+
+function loadNotifications() {
+    notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+    updateNotificationCount();
+}
+
+function addNotification(notification) {
+    notifications.unshift(notification);
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+    updateNotificationCount();
+}
+
+function updateNotificationCount() {
+    const unreadCount = notifications.filter(n => !n.read).length;
+    const badge = document.getElementById('notificationCount');
     
-    document.body.appendChild(notification);
+    if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function markNotificationsAsRead() {
+    notifications.forEach(n => n.read = true);
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+    updateNotificationCount();
+    
+    // Update UI
+    document.querySelectorAll('.notification-item.unread').forEach(item => {
+        item.classList.remove('unread');
+    });
+}
+
+function acceptInvitation(workspaceType) {
+    showNotification(`Accepted invitation to ${workspaceType} workspace!`, 'success');
+    
+    // Remove notification
+    const notificationItem = event.target.closest('.notification-item');
+    notificationItem.remove();
+}
+
+// Modal functions
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Show notification (toast)
+function showNotification(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    // Add toast styles if not already present
+    if (!document.querySelector('#toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.textContent = `
+            .toast {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                color: white;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            }
+            .toast-success { background: var(--success); }
+            .toast-error { background: var(--danger); }
+            .toast-info { background: var(--primary-color); }
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(toast);
     
     setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
+        toast.remove();
     }, 3000);
 }
 
-// Close modal
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
+// Close modals when clicking outside
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
     }
 }
-
-// Update sidebar user
-function updateSidebarUser() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const userNameElement = document.getElementById('sidebarUserName');
-    
-    if (userNameElement) {
-        userNameElement.textContent = currentUser.name || 'Guest User';
-    }
-}
-
-// Add profile page specific styles
-const profileStyles = document.createElement('style');
-profileStyles.textContent = `
-    .profile-content {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    .profile-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 2rem;
-        margin-bottom: 2rem;
-        padding: 2rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .avatar-container {
-        position: relative;
-        display: inline-block;
-    }
-    
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 3rem;
-        color: white;
-        border: 4px solid white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .avatar-upload {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: #6366f1;
-        color: white;
-        border: 3px solid white;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s ease;
-    }
-    
-    .avatar-upload:hover {
-        background: #4f46e5;
-    }
-    
-    .profile-info h2 {
-        margin: 0 0 0.5rem 0;
-        color: #2d3748;
-    }
-    
-    .profile-info p {
-        margin: 0 0 1rem 0;
-        color: #718096;
-    }
-    
-    .profile-badges {
-        display: flex;
-        gap: 0.5rem;
-    }
-    
-    .badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    
-    .badge.premium {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-    }
-    
-    .badge.verified {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
-    }
-    
-    .profile-stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .stat-item h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin: 0 0 0.25rem 0;
-        color: #2d3748;
-    }
-    
-    .stat-item p {
-        margin: 0;
-        color: #718096;
-        font-size: 0.875rem;
-    }
-    
-    .profile-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-    
-    @media (max-width: 768px) {
-        .profile-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .profile-header {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .profile-stats {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    .profile-section {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-    }
-    
-    .profile-section h3 {
-        margin: 0 0 1.5rem 0;
-        color: #2d3748;
-    }
-    
-    .info-grid {
-        display: grid;
-        gap: 1rem;
-    }
-    
-    .info-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        background: #f7fafc;
-        border-radius: 8px;
-    }
-    
-    .info-item label {
-        font-weight: 600;
-        color: #4a5568;
-    }
-    
-    .info-item span {
-        color: #2d3748;
-    }
-    
-    .skills-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-    
-    .skill-tag {
-        padding: 0.25rem 0.75rem;
-        background: #edf2f7;
-        color: #4a5568;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    
-    .activity-chart {
-        margin: 2rem 0;
-        text-align: center;
-    }
-    
-    .workspace-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1rem;
-    }
-    
-    .workspace-card {
-        background: #f7fafc;
-        border-radius: 8px;
-        padding: 1.5rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .workspace-card:hover {
-        background: #edf2f7;
-        transform: translateY(-2px);
-    }
-    
-    .workspace-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-    
-    .workspace-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-    }
-    
-    .workspace-type {
-        font-size: 0.75rem;
-        color: #718096;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-    
-    .workspace-card h4 {
-        margin: 0 0 0.5rem 0;
-        color: #2d3748;
-    }
-    
-    .workspace-card p {
-        margin: 0 0 1rem 0;
-        color: #718096;
-        font-size: 0.875rem;
-    }
-    
-    .workspace-stats {
-        display: flex;
-        gap: 1rem;
-        font-size: 0.75rem;
-        color: #718096;
-    }
-    
-    .achievements-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-    
-    .achievement-card {
-        background: #f7fafc;
-        border-radius: 8px;
-        padding: 1.5rem;
-        text-align: center;
-        transition: all 0.2s ease;
-    }
-    
-    .achievement-card:hover {
-        background: #edf2f7;
-        transform: translateY(-2px);
-    }
-    
-    .achievement-card i {
-        font-size: 2rem;
-        color: #6366f1;
-        margin-bottom: 1rem;
-    }
-    
-    .achievement-card h4 {
-        margin: 0 0 0.5rem 0;
-        color: #2d3748;
-    }
-    
-    .achievement-card p {
-        margin: 0;
-        color: #718096;
-        font-size: 0.875rem;
-    }
-    
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-    
-    @media (max-width: 768px) {
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-    }
-    
-    .form-actions {
-        display: flex;
-        gap: 1rem;
-        justify-content: flex-end;
-        margin-top: 1.5rem;
-    }
-    
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(profileStyles);

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Conference - Collaborative Platform</title>
+    <link rel="stylesheet" href="video.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">
+                <i class="fas fa-video"></i>
+                Collaborative Platform
+            </h1>
+        </div>
+        <div class="header-center">
+            <div class="meeting-info">
+                <span id="meetingTitle">Team Meeting</span>
+                <span id="meetingId">ID: 123-456-789</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" onclick="copyMeetingLink()">
+                <i class="fas fa-link"></i> Copy Link
+            </button>
+            <div class="user-menu">
+                <button class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown" id="userDropdown">
+                    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    <a href="workspace.html"><i class="fas fa-briefcase"></i> Workspace</a>
+                    <a href="chat.html"><i class="fas fa-comments"></i> Chat</a>
+                    <a href="whiteboard.html"><i class="fas fa-chalkboard"></i> Whiteboard</a>
+                    <a href="document.html"><i class="fas fa-file-alt"></i> Documents</a>
+                    <a href="video.html"><i class="fas fa-video"></i> Video</a>
+                    <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                    <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+                    <a href="files.html"><i class="fas fa-folder"></i> Files</a>
+                    <a href="team.html"><i class="fas fa-users"></i> Team</a>
+                    <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                    <hr>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="video-container">
+        <!-- Video Grid -->
+        <div class="video-grid" id="videoGrid">
+            <!-- Local Video -->
+            <div class="video-item local-video">
+                <div class="video-wrapper">
+                    <video id="localVideo" autoplay muted></video>
+                    <div class="video-overlay">
+                        <div class="video-info">
+                            <span class="video-name">You</span>
+                            <span class="video-status" id="localStatus">
+                                <i class="fas fa-microphone"></i>
+                                <i class="fas fa-video"></i>
+                            </span>
+                        </div>
+                        <div class="video-controls">
+                            <button class="btn-icon" onclick="toggleMute()" title="Mute/Unmute">
+                                <i class="fas fa-microphone" id="micIcon"></i>
+                            </button>
+                            <button class="btn-icon" onclick="toggleVideo()" title="Camera On/Off">
+                                <i class="fas fa-video" id="videoIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meeting Controls -->
+        <div class="meeting-controls">
+            <div class="controls-left">
+                <button class="btn btn-icon" onclick="toggleMute()" id="micButton">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="btn btn-icon" onclick="toggleVideo()" id="cameraButton">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button class="btn btn-icon" onclick="toggleScreenShare()" id="shareButton">
+                    <i class="fas fa-desktop"></i>
+                </button>
+                <button class="btn btn-icon" onclick="toggleChat()" id="chatButton">
+                    <i class="fas fa-comment"></i>
+                    <span class="badge" id="chatBadge">0</span>
+                </button>
+                <button class="btn btn-icon" onclick="toggleParticipants()" id="participantsButton">
+                    <i class="fas fa-users"></i>
+                    <span class="badge" id="participantsBadge">1</span>
+                </button>
+                <button class="btn btn-icon" onclick="toggleWhiteboard()" id="whiteboardButton">
+                    <i class="fas fa-chalkboard"></i>
+                </button>
+                <button class="btn btn-icon" onclick="toggleRecording()" id="recordButton">
+                    <i class="fas fa-record-vinyl"></i>
+                </button>
+                <button class="btn btn-icon" onclick="toggleSettings()" id="settingsButton">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+            <div class="controls-center">
+                <div class="meeting-timer" id="meetingTimer">00:00:00</div>
+            </div>
+            <div class="controls-right">
+                <button class="btn btn-icon" onclick="raiseHand()" id="handButton">
+                    <i class="fas fa-hand-paper"></i>
+                </button>
+                <button class="btn btn-icon" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="btn btn-danger" onclick="leaveMeeting()">
+                    <i class="fas fa-phone-slash"></i> Leave
+                </button>
+            </div>
+        </div>
+
+        <!-- Side Panels -->
+        <div class="side-panels">
+            <!-- Chat Panel -->
+            <div class="side-panel chat-panel" id="chatPanel">
+                <div class="panel-header">
+                    <h3>Meeting Chat</h3>
+                    <button class="btn-icon" onclick="toggleChat()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="system-message">
+                            <span>Meeting started</span>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleChatKeyPress(event)">
+                        <button class="btn btn-primary" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Participants Panel -->
+            <div class="side-panel participants-panel" id="participantsPanel">
+                <div class="panel-header">
+                    <h3>Participants</h3>
+                    <button class="btn-icon" onclick="toggleParticipants()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="participants-list" id="participantsList">
+                        <div class="participant-item">
+                            <div class="participant-avatar">Y</div>
+                            <div class="participant-info">
+                                <span class="participant-name">You (Host)</span>
+                                <span class="participant-status">
+                                    <i class="fas fa-microphone"></i>
+                                    <i class="fas fa-video"></i>
+                                </span>
+                            </div>
+                            <div class="participant-actions">
+                                <button class="btn-icon" title="Mute">
+                                    <i class="fas fa-microphone-slash"></i>
+                                </button>
+                                <button class="btn-icon" title="Remove">
+                                    <i class="fas fa-user-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="invite-section">
+                        <button class="btn btn-primary" onclick="showInviteModal()">
+                            <i class="fas fa-user-plus"></i> Invite
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Whiteboard Panel -->
+            <div class="side-panel whiteboard-panel" id="whiteboardPanel">
+                <div class="panel-header">
+                    <h3>Whiteboard</h3>
+                    <button class="btn-icon" onclick="toggleWhiteboard()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="whiteboard-canvas">
+                        <canvas id="whiteboardCanvas"></canvas>
+                    </div>
+                    <div class="whiteboard-tools">
+                        <button class="btn-icon" onclick="selectWhiteboardTool('pen')">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-icon" onclick="selectWhiteboardTool('eraser')">
+                            <i class="fas fa-eraser"></i>
+                        </button>
+                        <button class="btn-icon" onclick="selectWhiteboardTool('text')">
+                            <i class="fas fa-font"></i>
+                        </button>
+                        <button class="btn-icon" onclick="clearWhiteboard()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Video Settings</h2>
+                <button class="btn-icon" onclick="closeModal('settingsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Camera</h3>
+                    <select id="cameraSelect" class="form-control">
+                        <option>Default Camera</option>
+                    </select>
+                    <div class="video-preview">
+                        <video id="cameraPreview" autoplay muted></video>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Microphone</h3>
+                    <select id="microphoneSelect" class="form-control">
+                        <option>Default Microphone</option>
+                    </select>
+                    <div class="audio-level">
+                        <div class="audio-bar">
+                            <div class="audio-fill" id="audioFill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Speaker</h3>
+                    <select id="speakerSelect" class="form-control">
+                        <option>Default Speaker</option>
+                    </select>
+                </div>
+                <div class="settings-section">
+                    <h3>Video Quality</h3>
+                    <select id="qualitySelect" class="form-control">
+                        <option value="720p">720p (HD)</option>
+                        <option value="1080p">1080p (Full HD)</option>
+                        <option value="480p">480p</option>
+                        <option value="360p">360p</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('settingsModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Modal -->
+    <div class="modal" id="inviteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Invite Participants</h2>
+                <button class="btn-icon" onclick="closeModal('inviteModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="invite-options">
+                    <div class="invite-option">
+                        <h3>Share Link</h3>
+                        <div class="share-link">
+                            <input type="text" id="shareLink" readonly value="https://platform.app/meeting/123-456-789">
+                            <button class="btn btn-primary" onclick="copyShareLink()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="invite-option">
+                        <h3>Send Email</h3>
+                        <div class="email-invite">
+                            <input type="email" id="emailInvite" placeholder="Enter email address">
+                            <button class="btn btn-primary" onclick="sendEmailInvite()">
+                                <i class="fas fa-envelope"></i> Send
+                            </button>
+                        </div>
+                    </div>
+                    <div class="invite-option">
+                        <h3>Meeting ID</h3>
+                        <div class="meeting-id-display">
+                            <span id="meetingIdDisplay">123-456-789</span>
+                            <button class="btn btn-primary" onclick="copyMeetingId()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('inviteModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recording Modal -->
+    <div class="modal" id="recordingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Recording Settings</h2>
+                <button class="btn-icon" onclick="closeModal('recordingModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="recording-options">
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="recordVideo" checked>
+                            Record Video
+                        </label>
+                        <label>
+                            <input type="checkbox" id="recordAudio" checked>
+                            Record Audio
+                        </label>
+                        <label>
+                            <input type="checkbox" id="recordChat">
+                            Record Chat
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>Recording Quality</label>
+                        <select id="recordingQuality" class="form-control">
+                            <option value="high">High (1080p)</option>
+                            <option value="medium">Medium (720p)</option>
+                            <option value="low">Low (480p)</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Save Location</label>
+                        <select id="saveLocation" class="form-control">
+                            <option value="cloud">Cloud Storage</option>
+                            <option value="local">Local Device</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('recordingModal')">Cancel</button>
+                <button class="btn btn-danger" onclick="startRecording()">
+                    <i class="fas fa-record-vinyl"></i> Start Recording
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="video.js"></script>
+</body>
+</html>

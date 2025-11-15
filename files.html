@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Storage - Collaborative Platform</title>
+    <link rel="stylesheet" href="files.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">
+                <i class="fas fa-folder"></i>
+                Collaborative Platform
+            </h1>
+        </div>
+        <div class="header-center">
+            <div class="breadcrumb">
+                <span onclick="navigateToFolder('root')">My Files</span>
+                <span class="separator">/</span>
+                <span id="currentFolderName">Root</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" onclick="showUploadModal()">
+                <i class="fas fa-upload"></i> Upload Files
+            </button>
+            <button class="btn btn-secondary" onclick="createNewFolder()">
+                <i class="fas fa-folder-plus"></i> New Folder
+            </button>
+            <div class="user-menu">
+                <button class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown" id="userDropdown">
+                    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    <a href="workspace.html"><i class="fas fa-briefcase"></i> Workspace</a>
+                    <a href="chat.html"><i class="fas fa-comments"></i> Chat</a>
+                    <a href="whiteboard.html"><i class="fas fa-chalkboard"></i> Whiteboard</a>
+                    <a href="document.html"><i class="fas fa-file-alt"></i> Documents</a>
+                    <a href="video.html"><i class="fas fa-video"></i> Video</a>
+                    <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                    <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+                    <a href="files.html"><i class="fas fa-folder"></i> Files</a>
+                    <a href="team.html"><i class="fas fa-users"></i> Team</a>
+                    <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                    <hr>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="files-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Quick Access</h3>
+                <div class="quick-links">
+                    <a href="#" class="quick-link" onclick="navigateToFolder('root')">
+                        <i class="fas fa-home"></i> My Files
+                    </a>
+                    <a href="#" class="quick-link" onclick="navigateToFolder('recent')">
+                        <i class="fas fa-clock"></i> Recent
+                    </a>
+                    <a href="#" class="quick-link" onclick="navigateToFolder('shared')">
+                        <i class="fas fa-share-alt"></i> Shared with me
+                    </a>
+                    <a href="#" class="quick-link" onclick="navigateToFolder('starred')">
+                        <i class="fas fa-star"></i> Starred
+                    </a>
+                    <a href="#" class="quick-link" onclick="navigateToFolder('trash')">
+                        <i class="fas fa-trash"></i> Trash
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Storage</h3>
+                <div class="storage-info">
+                    <div class="storage-bar">
+                        <div class="storage-used" id="storageUsed"></div>
+                    </div>
+                    <div class="storage-details">
+                        <span id="storageUsedText">0 GB used</span>
+                        <span>of 10 GB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Categories</h3>
+                <div class="category-list">
+                    <div class="category-item">
+                        <i class="fas fa-image" style="color: #ff6b6b;"></i>
+                        <span>Images</span>
+                        <span class="category-count" id="imageCount">0</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-file-alt" style="color: #4ecdc4;"></i>
+                        <span>Documents</span>
+                        <span class="category-count" id="docCount">0</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-video" style="color: #45b7d1;"></i>
+                        <span>Videos</span>
+                        <span class="category-count" id="videoCount">0</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-music" style="color: #96ceb4;"></i>
+                        <span>Audio</span>
+                        <span class="category-count" id="audioCount">0</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-archive" style="color: #dda15e;"></i>
+                        <span>Archives</span>
+                        <span class="category-count" id="archiveCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Shared Folders</h3>
+                <div class="shared-folders" id="sharedFolders">
+                    <div class="shared-folder-item">
+                        <i class="fas fa-folder-share"></i>
+                        <span>Team Projects</span>
+                    </div>
+                    <div class="shared-folder-item">
+                        <i class="fas fa-folder-share"></i>
+                        <span>Marketing Materials</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn-icon" onclick="refreshFiles()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="view-toggle">
+                        <button class="btn-icon active" onclick="setView('grid')" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="btn-icon" onclick="setView('list')" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                    <div class="sort-options">
+                        <select id="sortSelect" onchange="sortFiles()">
+                            <option value="name">Name</option>
+                            <option value="date">Date Modified</option>
+                            <option value="size">Size</option>
+                            <option value="type">Type</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="fileSearch" placeholder="Search files and folders..." onkeyup="searchFiles()">
+                    </div>
+                    <button class="btn-icon" onclick="toggleSelectMode()" title="Select">
+                        <i class="fas fa-check-square"></i>
+                    </button>
+                    <button class="btn-icon" onclick="showShareModal()" title="Share">
+                        <i class="fas fa-share"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Files Grid/List -->
+            <div class="files-container" id="filesContainer">
+                <!-- Files will be dynamically loaded here -->
+            </div>
+
+            <!-- Upload Area -->
+            <div class="upload-area" id="uploadArea" style="display: none;">
+                <div class="upload-content">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Drag and drop files here</h3>
+                    <p>or click to browse</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Choose Files
+                    </button>
+                    <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFileSelect(event)">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Upload Progress Modal -->
+    <div class="modal" id="uploadProgressModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Uploading Files</h2>
+                <button class="btn-icon" onclick="closeModal('uploadProgressModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-progress-list" id="uploadProgressList">
+                    <!-- Upload progress items will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Details Modal -->
+    <div class="modal" id="fileDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="fileDetailsTitle">File Details</h2>
+                <button class="btn-icon" onclick="closeModal('fileDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="file-preview" id="filePreview">
+                    <!-- File preview will be shown here -->
+                </div>
+                <div class="file-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Name:</label>
+                            <span id="fileName">document.pdf</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Type:</label>
+                            <span id="fileType">PDF Document</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Size:</label>
+                            <span id="fileSize">2.5 MB</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Modified:</label>
+                            <span id="fileModified">Nov 15, 2024 10:30 AM</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Created:</label>
+                            <span id="fileCreated">Nov 10, 2024 2:15 PM</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Owner:</label>
+                            <span id="fileOwner">John Doe</span>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-primary" onclick="downloadFile()">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-secondary" onclick="shareFile()">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                        <button class="btn btn-secondary" onclick="renameFile()">
+                            <i class="fas fa-edit"></i> Rename
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteFile()">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Share File</h2>
+                <button class="btn-icon" onclick="closeModal('shareModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="share-options">
+                    <div class="share-option">
+                        <label>
+                            <input type="radio" name="shareType" value="link" checked>
+                            Share via link
+                        </label>
+                    </div>
+                    <div class="share-option">
+                        <label>
+                            <input type="radio" name="shareType" value="email">
+                            Share via email
+                        </label>
+                    </div>
+                </div>
+                <div class="share-link" id="shareLinkSection">
+                    <div class="link-container">
+                        <input type="text" id="shareLinkInput" readonly value="https://files.example.com/share/abc123">
+                        <button class="btn btn-secondary" onclick="copyShareLink()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <div class="link-permissions">
+                        <label>Permissions:</label>
+                        <select id="sharePermissions">
+                            <option value="view">Can view</option>
+                            <option value="comment">Can comment</option>
+                            <option value="edit">Can edit</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="share-email" id="shareEmailSection" style="display: none;">
+                    <div class="email-inputs">
+                        <input type="email" id="shareEmailInput" placeholder="Enter email addresses...">
+                        <button class="btn btn-secondary" onclick="addShareEmail()">Add</button>
+                    </div>
+                    <div class="email-list" id="emailList">
+                        <!-- Email recipients will be added here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('shareModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmShare()">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Files</h2>
+                <button class="btn-icon" onclick="closeModal('uploadModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-zone" id="uploadZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Drag and drop files here</h3>
+                    <p>or click to browse</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('modalFileInput').click()">
+                        Choose Files
+                    </button>
+                    <input type="file" id="modalFileInput" multiple style="display: none;" onchange="handleModalFileSelect(event)">
+                </div>
+                <div class="upload-options">
+                    <label>
+                        <input type="checkbox" id="convertToPDF">
+                        Convert documents to PDF
+                    </label>
+                    <label>
+                        <input type="checkbox" id="compressImages">
+                        Compress images
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('uploadModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="startUpload()">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="files.js"></script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Management - Collaborative Platform</title>
+    <link rel="stylesheet" href="team.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">
+                <i class="fas fa-users"></i>
+                Collaborative Platform
+            </h1>
+        </div>
+        <div class="header-center">
+            <div class="breadcrumb">
+                <span>Team Management</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" onclick="showInviteModal()">
+                <i class="fas fa-user-plus"></i> Invite Member
+            </button>
+            <button class="btn btn-secondary" onclick="showCreateTeamModal()">
+                <i class="fas fa-plus"></i> New Team
+            </button>
+            <div class="user-menu">
+                <button class="user-avatar" onclick="toggleUserMenu()">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown" id="userDropdown">
+                    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    <a href="workspace.html"><i class="fas fa-briefcase"></i> Workspace</a>
+                    <a href="chat.html"><i class="fas fa-comments"></i> Chat</a>
+                    <a href="whiteboard.html"><i class="fas fa-chalkboard"></i> Whiteboard</a>
+                    <a href="document.html"><i class="fas fa-file-alt"></i> Documents</a>
+                    <a href="video.html"><i class="fas fa-video"></i> Video</a>
+                    <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                    <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+                    <a href="files.html"><i class="fas fa-folder"></i> Files</a>
+                    <a href="team.html"><i class="fas fa-users"></i> Team</a>
+                    <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                    <hr>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="team-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Teams</h3>
+                <div class="team-list" id="teamList">
+                    <div class="team-item active" onclick="selectTeam('all')">
+                        <i class="fas fa-users"></i>
+                        <span>All Members</span>
+                        <span class="team-count" id="allMembersCount">0</span>
+                    </div>
+                    <div class="team-item" onclick="selectTeam('dev')">
+                        <i class="fas fa-code"></i>
+                        <span>Development</span>
+                        <span class="team-count" id="devTeamCount">0</span>
+                    </div>
+                    <div class="team-item" onclick="selectTeam('design')">
+                        <i class="fas fa-palette"></i>
+                        <span>Design</span>
+                        <span class="team-count" id="designTeamCount">0</span>
+                    </div>
+                    <div class="team-item" onclick="selectTeam('marketing')">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Marketing</span>
+                        <span class="team-count" id="marketingTeamCount">0</span>
+                    </div>
+                    <div class="team-item" onclick="selectTeam('sales')">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Sales</span>
+                        <span class="team-count" id="salesTeamCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Filters</h3>
+                <div class="filter-options">
+                    <div class="filter-item">
+                        <label>
+                            <input type="checkbox" id="filterOnline" onchange="filterMembers()">
+                            Online only
+                        </label>
+                    </div>
+                    <div class="filter-item">
+                        <label>
+                            <input type="checkbox" id="filterAvailable" onchange="filterMembers()">
+                            Available
+                        </label>
+                    </div>
+                    <div class="filter-item">
+                        <label>
+                            <input type="checkbox" id="filterAdmin" onchange="filterMembers()">
+                            Admins only
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Quick Stats</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <i class="fas fa-users"></i>
+                        <span class="stat-value" id="totalMembers">0</span>
+                        <span class="stat-label">Total Members</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-circle text-success"></i>
+                        <span class="stat-value" id="onlineMembers">0</span>
+                        <span class="stat-label">Online</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-user-shield"></i>
+                        <span class="stat-value" id="adminMembers">0</span>
+                        <span class="stat-label">Admins</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-user-clock"></i>
+                        <span class="stat-value" id="pendingInvites">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Recent Activity</h3>
+                <div class="activity-list" id="activityList">
+                    <div class="activity-item">
+                        <i class="fas fa-user-plus text-success"></i>
+                        <div class="activity-content">
+                            <span class="activity-text">John Doe joined Development team</span>
+                            <span class="activity-time">2 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <i class="fas fa-user-minus text-danger"></i>
+                        <div class="activity-content">
+                            <span class="activity-text">Jane Smith left Marketing team</span>
+                            <span class="activity-time">5 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <i class="fas fa-user-edit text-warning"></i>
+                        <div class="activity-content">
+                            <span class="activity-text">Mike Johnson promoted to Admin</span>
+                            <span class="activity-time">1 day ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="memberSearch" placeholder="Search team members..." onkeyup="searchMembers()">
+                    </div>
+                    <div class="sort-options">
+                        <select id="sortSelect" onchange="sortMembers()">
+                            <option value="name">Name</option>
+                            <option value="role">Role</option>
+                            <option value="team">Team</option>
+                            <option value="status">Status</option>
+                            <option value="joined">Joined Date</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn-icon" onclick="toggleView()" title="Toggle View">
+                        <i class="fas fa-th" id="viewIcon"></i>
+                    </button>
+                    <button class="btn-icon" onclick="exportMembers()" title="Export">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn-icon" onclick="refreshTeam()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Team Members Grid/List -->
+            <div class="members-container" id="membersContainer">
+                <!-- Team members will be dynamically loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Invite Member Modal -->
+    <div class="modal" id="inviteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Invite Team Member</h2>
+                <button class="btn-icon" onclick="closeModal('inviteModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="inviteEmail">Email Address</label>
+                    <input type="email" id="inviteEmail" placeholder="Enter email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="inviteName">Full Name</label>
+                    <input type="text" id="inviteName" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="inviteRole">Role</label>
+                    <select id="inviteRole">
+                        <option value="member">Team Member</option>
+                        <option value="lead">Team Lead</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inviteTeam">Team</label>
+                    <select id="inviteTeam">
+                        <option value="dev">Development</option>
+                        <option value="design">Design</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="sales">Sales</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inviteMessage">Personal Message (Optional)</label>
+                    <textarea id="inviteMessage" rows="3" placeholder="Add a personal message to the invitation..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('inviteModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="sendInvitation()">Send Invitation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Team Modal -->
+    <div class="modal" id="createTeamModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Team</h2>
+                <button class="btn-icon" onclick="closeModal('createTeamModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="teamName">Team Name</label>
+                    <input type="text" id="teamName" placeholder="Enter team name" required>
+                </div>
+                <div class="form-group">
+                    <label for="teamDescription">Description</label>
+                    <textarea id="teamDescription" rows="3" placeholder="Describe the team's purpose..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="teamColor">Team Color</label>
+                    <div class="color-picker">
+                        <button class="color-option" style="background: #007bff;" onclick="selectTeamColor('#007bff')"></button>
+                        <button class="color-option" style="background: #28a745;" onclick="selectTeamColor('#28a745')"></button>
+                        <button class="color-option" style="background: #dc3545;" onclick="selectTeamColor('#dc3545')"></button>
+                        <button class="color-option" style="background: #ffc107;" onclick="selectTeamColor('#ffc107')"></button>
+                        <button class="color-option" style="background: #17a2b8;" onclick="selectTeamColor('#17a2b8')"></button>
+                        <button class="color-option" style="background: #6f42c1;" onclick="selectTeamColor('#6f42c1')"></button>
+                        <button class="color-option" style="background: #fd7e14;" onclick="selectTeamColor('#fd7e14')"></button>
+                        <button class="color-option" style="background: #20c997;" onclick="selectTeamColor('#20c997')"></button>
+                    </div>
+                    <input type="hidden" id="teamColor" value="#007bff">
+                </div>
+                <div class="form-group">
+                    <label>Team Members</label>
+                    <div class="member-selection">
+                        <div class="member-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search members to add..." onkeyup="searchMembersForTeam(this.value)">
+                        </div>
+                        <div class="selected-members" id="selectedTeamMembers">
+                            <!-- Selected members will be shown here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('createTeamModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="createTeam()">Create Team</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Details Modal -->
+    <div class="modal" id="memberDetailsModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="memberDetailsTitle">Member Details</h2>
+                <button class="btn-icon" onclick="closeModal('memberDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="member-profile">
+                    <div class="member-avatar-section">
+                        <div class="member-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="member-status">
+                            <span class="status-indicator online"></span>
+                            <span id="memberStatusText">Online</span>
+                        </div>
+                    </div>
+                    <div class="member-info">
+                        <h3 id="memberName">John Doe</h3>
+                        <p id="memberRole">Senior Developer</p>
+                        <p id="memberEmail">john.doe@example.com</p>
+                        <div class="member-badges">
+                            <span class="badge badge-primary" id="memberTeam">Development</span>
+                            <span class="badge badge-success" id="memberRoleBadge">Team Lead</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="member-tabs">
+                    <button class="tab-btn active" onclick="switchMemberTab('overview')">Overview</button>
+                    <button class="tab-btn" onclick="switchMemberTab('activity')">Activity</button>
+                    <button class="tab-btn" onclick="switchMemberTab('permissions')">Permissions</button>
+                    <button class="tab-btn" onclick="switchMemberTab('settings')">Settings</button>
+                </div>
+                
+                <div class="member-tab-content">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane active" id="overviewTab">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Joined Date:</label>
+                                <span id="memberJoinedDate">Nov 1, 2024</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Active:</label>
+                                <span id="memberLastActive">2 hours ago</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Phone:</label>
+                                <span id="memberPhone">+1 234 567 8900</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Location:</label>
+                                <span id="memberLocation">New York, USA</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Department:</label>
+                                <span id="memberDepartment">Engineering</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Reports To:</label>
+                                <span id="memberReportsTo">Sarah Wilson</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Tab -->
+                    <div class="tab-pane" id="activityTab">
+                        <div class="activity-timeline" id="memberActivityTimeline">
+                            <!-- Activity items will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Permissions Tab -->
+                    <div class="tab-pane" id="permissionsTab">
+                        <div class="permissions-list">
+                            <div class="permission-item">
+                                <label>
+                                    <input type="checkbox" id="permCreateProjects">
+                                    Create Projects
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <label>
+                                    <input type="checkbox" id="permManageTeam">
+                                    Manage Team Members
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <label>
+                                    <input type="checkbox" id="permViewReports">
+                                    View Reports
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <label>
+                                    <input type="checkbox" id="permManageSettings">
+                                    Manage Settings
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings Tab -->
+                    <div class="tab-pane" id="settingsTab">
+                        <div class="settings-list">
+                            <div class="setting-item">
+                                <label>Change Role</label>
+                                <select id="changeRoleSelect">
+                                    <option value="member">Team Member</option>
+                                    <option value="lead">Team Lead</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Change Team</label>
+                                <select id="changeTeamSelect">
+                                    <option value="dev">Development</option>
+                                    <option value="design">Design</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="sales">Sales</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Email Notifications</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    <span class="slider"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('memberDetailsModal')">Close</button>
+                <button class="btn btn-primary" onclick="saveMemberChanges()">Save Changes</button>
+                <button class="btn btn-danger" onclick="removeMember()">Remove Member</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="team.js"></script>
+</body>
+</html>

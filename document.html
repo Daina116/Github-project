@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Editor - Collaborative Workspace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="document.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-file-alt"></i>
+                <span>DocEditor</span>
+            </div>
+        </div>
+        <div class="header-center">
+            <input type="text" id="documentTitle" class="document-title-input" value="Untitled Document" placeholder="Enter document title">
+        </div>
+        <div class="header-right">
+            <button class="btn btn-secondary" onclick="saveDocument()">
+                <i class="fas fa-save"></i>
+                <span>Save</span>
+            </button>
+            <button class="btn btn-secondary" onclick="exportDocument()">
+                <i class="fas fa-download"></i>
+                <span>Export</span>
+            </button>
+            <button class="btn btn-secondary" onclick="shareDocument()">
+                <i class="fas fa-share"></i>
+                <span>Share</span>
+            </button>
+            <button class="btn btn-secondary" onclick="toggleComments()">
+                <i class="fas fa-comments"></i>
+                <span>Comments</span>
+            </button>
+            <div class="user-menu" onclick="toggleUserMenu()">
+                <img src="https://picsum.photos/seed/user/32/32.jpg" alt="User" class="user-avatar">
+                <span class="user-name">Daina116</span>
+                <i class="fas fa-chevron-down"></i>
+                <div class="dropdown-menu" id="userDropdown">
+                    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    <a href="workspace.html"><i class="fas fa-briefcase"></i> Workspace</a>
+                    <a href="chat.html"><i class="fas fa-comments"></i> Chat</a>
+                    <a href="whiteboard.html"><i class="fas fa-palette"></i> Whiteboard</a>
+                    <a href="document.html"><i class="fas fa-file-alt"></i> Documents</a>
+                    <a href="video.html"><i class="fas fa-video"></i> Video</a>
+                    <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                    <a href="calendar.html"><i class="fas fa-calendar"></i> Calendar</a>
+                    <a href="files.html"><i class="fas fa-folder"></i> Files</a>
+                    <a href="team.html"><i class="fas fa-users"></i> Team</a>
+                    <a href="analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="document-main">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-section">
+                <div class="tool-group">
+                    <button class="tool-btn" onclick="formatText('bold')" title="Bold">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('italic')" title="Italic">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('underline')" title="Underline">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('strikethrough')" title="Strikethrough">
+                        <i class="fas fa-strikethrough"></i>
+                    </button>
+                </div>
+                <div class="tool-group">
+                    <select id="fontFamily" onchange="changeFontFamily(this.value)">
+                        <option value="Arial">Arial</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Comic Sans MS">Comic Sans MS</option>
+                    </select>
+                    <select id="fontSize" onchange="changeFontSize(this.value)">
+                        <option value="10">10px</option>
+                        <option value="12">12px</option>
+                        <option value="14" selected>14px</option>
+                        <option value="16">16px</option>
+                        <option value="18">18px</option>
+                        <option value="20">20px</option>
+                        <option value="24">24px</option>
+                        <option value="28">28px</option>
+                        <option value="32">32px</option>
+                        <option value="36">36px</option>
+                    </select>
+                </div>
+                <div class="tool-group">
+                    <input type="color" id="textColor" onchange="changeTextColor(this.value)" title="Text Color">
+                    <input type="color" id="bgColor" onchange="changeBgColor(this.value)" title="Background Color">
+                </div>
+            </div>
+            
+            <div class="toolbar-section">
+                <div class="tool-group">
+                    <button class="tool-btn" onclick="formatText('justifyLeft')" title="Align Left">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('justifyCenter')" title="Align Center">
+                        <i class="fas fa-align-center"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('justifyRight')" title="Align Right">
+                        <i class="fas fa-align-right"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('justifyFull')" title="Justify">
+                        <i class="fas fa-align-justify"></i>
+                    </button>
+                </div>
+                <div class="tool-group">
+                    <button class="tool-btn" onclick="formatText('insertOrderedList')" title="Ordered List">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('insertUnorderedList')" title="Unordered List">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('indent')" title="Indent">
+                        <i class="fas fa-indent"></i>
+                    </button>
+                    <button class="tool-btn" onclick="formatText('outdent')" title="Outdent">
+                        <i class="fas fa-outdent"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="toolbar-section">
+                <div class="tool-group">
+                    <button class="tool-btn" onclick="insertLink()" title="Insert Link">
+                        <i class="fas fa-link"></i>
+                    </button>
+                    <button class="tool-btn" onclick="insertImage()" title="Insert Image">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="tool-btn" onclick="insertTable()" title="Insert Table">
+                        <i class="fas fa-table"></i>
+                    </button>
+                    <button class="tool-btn" onclick="insertCode()" title="Insert Code">
+                        <i class="fas fa-code"></i>
+                    </button>
+                    <button class="tool-btn" onclick="insertQuote()" title="Insert Quote">
+                        <i class="fas fa-quote-left"></i>
+                    </button>
+                    <button class="tool-btn" onclick="insertHorizontalRule()" title="Horizontal Rule">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+                <div class="tool-group">
+                    <button class="tool-btn" onclick="undo()" title="Undo">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="tool-btn" onclick="redo()" title="Redo">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Container -->
+        <div class="document-container">
+            <!-- Sidebar -->
+            <div class="document-sidebar">
+                <div class="sidebar-section">
+                    <h3>Documents</h3>
+                    <div class="document-list" id="documentList">
+                        <div class="document-item active" onclick="loadDocument('doc1')">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Untitled Document</span>
+                            <div class="document-actions">
+                                <button class="btn-icon" onclick="renameDocument('doc1', event)" title="Rename">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-icon" onclick="deleteDocument('doc1', event)" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="createNewDocument()">
+                        <i class="fas fa-plus"></i>
+                        New Document
+                    </button>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Templates</h3>
+                    <div class="template-list">
+                        <button class="template-btn" onclick="loadTemplate('blank')">
+                            <i class="fas fa-file"></i>
+                            <span>Blank Document</span>
+                        </button>
+                        <button class="template-btn" onclick="loadTemplate('letter')">
+                            <i class="fas fa-envelope"></i>
+                            <span>Letter</span>
+                        </button>
+                        <button class="template-btn" onclick="loadTemplate('resume')">
+                            <i class="fas fa-user-tie"></i>
+                            <span>Resume</span>
+                        </button>
+                        <button class="template-btn" onclick="loadTemplate('report')">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Report</span>
+                        </button>
+                        <button class="template-btn" onclick="loadTemplate('essay')">
+                            <i class="fas fa-pen"></i>
+                            <span>Essay</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Recent</h3>
+                    <div class="recent-list" id="recentList">
+                        <!-- Recent documents will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <div class="editor-wrapper">
+                    <div id="editor" class="editor" contenteditable="true" onkeyup="handleKeyUp()" onpaste="handlePaste(event)">
+                        <h1>Start typing your document...</h1>
+                        <p>Your content goes here. Use the toolbar above to format your text.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Panel -->
+            <div class="comments-panel" id="commentsPanel" style="display: none;">
+                <div class="comments-header">
+                    <h3>Comments</h3>
+                    <button class="btn-icon" onclick="toggleComments()" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="comments-list" id="commentsList">
+                    <!-- Comments will be populated here -->
+                </div>
+                <div class="comment-input">
+                    <textarea id="commentText" placeholder="Add a comment..."></textarea>
+                    <button class="btn btn-primary btn-sm" onclick="addComment()">
+                        <i class="fas fa-paper-plane"></i>
+                        Post
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Link Modal -->
+    <div id="linkModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('linkModal')">&times;</span>
+            <h2>Insert Link</h2>
+            <div class="form-group">
+                <label for="linkText">Link Text:</label>
+                <input type="text" id="linkText" placeholder="Enter link text">
+            </div>
+            <div class="form-group">
+                <label for="linkUrl">URL:</label>
+                <input type="url" id="linkUrl" placeholder="https://example.com">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('linkModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="insertLinkConfirm()">Insert Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('imageModal')">&times;</span>
+            <h2>Insert Image</h2>
+            <div class="form-group">
+                <label for="imageUrl">Image URL:</label>
+                <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="form-group">
+                <label for="imageAlt">Alt Text:</label>
+                <input type="text" id="imageAlt" placeholder="Image description">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('imageModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="insertImageConfirm()">Insert Image</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Modal -->
+    <div id="tableModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('tableModal')">&times;</span>
+            <h2>Insert Table</h2>
+            <div class="form-group">
+                <label for="tableRows">Rows:</label>
+                <input type="number" id="tableRows" min="1" max="20" value="3">
+            </div>
+            <div class="form-group">
+                <label for="tableCols">Columns:</label>
+                <input type="number" id="tableCols" min="1" max="10" value="3">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('tableModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="insertTableConfirm()">Insert Table</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('shareModal')">&times;</span>
+            <h2>Share Document</h2>
+            <div class="share-options">
+                <div class="share-option">
+                    <i class="fas fa-link"></i>
+                    <div class="share-info">
+                        <h4>Share Link</h4>
+                        <p>Share a link to this document</p>
+                        <button class="btn btn-primary btn-sm" onclick="copyShareLink()">Copy Link</button>
+                    </div>
+                </div>
+                <div class="share-option">
+                    <i class="fas fa-envelope"></i>
+                    <div class="share-info">
+                        <h4>Email Invite</h4>
+                        <p>Send invitation via email</p>
+                        <button class="btn btn-primary btn-sm" onclick="showEmailInvite()">Send Email</button>
+                    </div>
+                </div>
+                <div class="share-option">
+                    <i class="fas fa-code"></i>
+                    <div class="share-info">
+                        <h4>Embed</h4>
+                        <p>Embed this document in a website</p>
+                        <button class="btn btn-primary btn-sm" onclick="showEmbedCode()">Get Embed Code</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Invite Modal -->
+    <div id="emailInviteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('emailInviteModal')">&times;</span>
+            <h2>Email Invitation</h2>
+            <div class="form-group">
+                <label for="emailAddresses">Email Addresses:</label>
+                <input type="text" id="emailAddresses" placeholder="email1@example.com, email2@example.com">
+            </div>
+            <div class="form-group">
+                <label for="emailMessage">Message:</label>
+                <textarea id="emailMessage" rows="4" placeholder="Add a personal message..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('emailInviteModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="sendInvitation()">Send Invitation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embed Modal -->
+    <div id="embedModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('embedModal')">&times;</span>
+            <h2>Embed Document</h2>
+            <div class="form-group">
+                <label for="embedCode">Embed Code:</label>
+                <textarea id="embedCode" rows="4" readonly></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('embedModal')">Close</button>
+                <button class="btn btn-primary" onclick="copyEmbedCode()">Copy Code</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="document.js"></script>
+</body>
+</html>
