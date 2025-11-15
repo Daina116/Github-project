@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollabSpace - Online Collaboration Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <span>CollabSpace</span>
+            </div>
+            <nav class="nav">
+                <button class="btn btn-primary" onclick="showLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="hero">
+                <h1>Collaborate in Real-Time</h1>
+                <p>Work together with your team from anywhere in the world</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-large btn-primary" onclick="createWorkspace()">
+                        <i class="fas fa-plus"></i> Create Workspace
+                    </button>
+                    <button class="btn btn-large btn-secondary" onclick="joinWorkspace()">
+                        <i class="fas fa-door-open"></i> Join Workspace
+                    </button>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="grid">
+                    <div class="feature-card">
+                        <i class="fas fa-video"></i>
+                        <h3>Video Calls</h3>
+                        <p>HD video conferencing with screen sharing capabilities</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-comments"></i>
+                        <h3>Live Chat</h3>
+                        <p>Real-time messaging with emoji reactions and file sharing</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Document Editor</h3>
+                        <p>Collaborative document editing with version control</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-tasks"></i>
+                        <h3>Task Management</h3>
+                        <p>Kanban boards and task tracking for project management</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chalkboard"></i>
+                        <h3>Whiteboard</h3>
+                        <p>Interactive whiteboard for brainstorming and planning</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-calendar"></i>
+                        <h3>Scheduling</h3>
+                        <p>Shared calendar and meeting scheduling tools</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="active-workspaces" id="activeWorkspaces" style="display: none;">
+                <h2>Active Workspaces</h2>
+                <div class="workspace-grid" id="workspaceGrid">
+                    <!-- Workspaces will be dynamically added here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Sign In</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="workspaceModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('workspaceModal')">&times;</span>
+            <h2 id="workspaceModalTitle">Create Workspace</h2>
+            <form onsubmit="handleWorkspaceSubmit(event)">
+                <div class="form-group">
+                    <label for="workspaceName">Workspace Name</label>
+                    <input type="text" id="workspaceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="workspaceDescription">Description</label>
+                    <textarea id="workspaceDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="workspaceType">Type</label>
+                    <select id="workspaceType">
+                        <option value="team">Team</option>
+                        <option value="project">Project</option>
+                        <option value="meeting">Meeting</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="workspace-view" id="workspaceView" style="display: none;">
+        <div class="workspace-header">
+            <button class="btn btn-secondary" onclick="exitWorkspace()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <h2 id="workspaceTitle">Workspace</h2>
+            <div class="workspace-actions">
+                <button class="btn btn-primary" onclick="inviteUsers()">
+                    <i class="fas fa-user-plus"></i> Invite
+                </button>
+            </div>
+        </div>
+        
+        <div class="workspace-content">
+            <div class="workspace-sidebar">
+                <div class="sidebar-section">
+                    <h3>Participants</h3>
+                    <div class="participants-list" id="participantsList">
+                        <!-- Participants will be added here -->
+                    </div>
+                </div>
+                <div class="sidebar-section">
+                    <h3>Chat</h3>
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages"></div>
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleChatKeypress(event)">
+                            <button class="btn btn-primary" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="workspace-main">
+                <div class="workspace-tabs">
+                    <button class="tab-btn active" onclick="switchTab('whiteboard')">
+                        <i class="fas fa-chalkboard"></i> Whiteboard
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('document')">
+                        <i class="fas fa-file-alt"></i> Document
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('video')">
+                        <i class="fas fa-video"></i> Video Call
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('tasks')">
+                        <i class="fas fa-tasks"></i> Tasks
+                    </button>
+                </div>
+                
+                <div class="tab-content">
+                    <div class="tab-pane active" id="whiteboard-tab">
+                        <canvas id="whiteboard" class="whiteboard-canvas"></canvas>
+                        <div class="whiteboard-tools">
+                            <button class="tool-btn" onclick="setDrawingTool('pen')">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="tool-btn" onclick="setDrawingTool('eraser')">
+                                <i class="fas fa-eraser"></i>
+                            </button>
+                            <input type="color" id="colorPicker" value="#000000">
+                            <button class="tool-btn" onclick="clearWhiteboard()">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="document-tab">
+                        <div class="document-editor">
+                            <div class="editor-toolbar">
+                                <button class="tool-btn" onclick="formatText('bold')">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button class="tool-btn" onclick="formatText('italic')">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button class="tool-btn" onclick="formatText('underline')">
+                                    <i class="fas fa-underline"></i>
+                                </button>
+                            </div>
+                            <div contenteditable="true" class="document-content" id="documentContent">
+                                Start typing your collaborative document here...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="video-tab">
+                        <div class="video-container">
+                            <div class="video-grid">
+                                <div class="video-placeholder">
+                                    <i class="fas fa-video"></i>
+                                    <p>Your camera preview</p>
+                                </div>
+                                <div class="video-placeholder">
+                                    <i class="fas fa-user"></i>
+                                    <p>Waiting for participants...</p>
+                                </div>
+                            </div>
+                            <div class="video-controls">
+                                <button class="btn btn-primary" onclick="toggleVideo()">
+                                    <i class="fas fa-video"></i> Start Video
+                                </button>
+                                <button class="btn btn-secondary" onclick="toggleAudio()">
+                                    <i class="fas fa-microphone"></i> Start Audio
+                                </button>
+                                <button class="btn btn-danger" onclick="shareScreen()">
+                                    <i class="fas fa-desktop"></i> Share Screen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="tasks-tab">
+                        <div class="task-board">
+                            <div class="task-column">
+                                <h3>To Do</h3>
+                                <div class="task-list" id="todoTasks">
+                                    <div class="task-card">
+                                        <h4>Sample Task</h4>
+                                        <p>Click to edit this task</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-column">
+                                <h3>In Progress</h3>
+                                <div class="task-list" id="inProgressTasks"></div>
+                            </div>
+                            <div class="task-column">
+                                <h3>Done</h3>
+                                <div class="task-list" id="doneTasks"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
